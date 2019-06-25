@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ThunderCast</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <!-- Fragments -->
+    <string name="title_explore">Explore</string>
+    <string name="title_podcasts">Podcasts</string>
+    <string name="title_profile">Profile</string>
+
+    <!-- -->
+    <string name="hint_search_podcasts">Search Podcasts</string>
+    <string name="hint_trending">Trending</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
