@@ -23,6 +23,7 @@ public class TrendingLineHolder extends RecyclerView.ViewHolder implements View.
         tvTrendingAuthor = itemView.findViewById(R.id.tvTrendingAuthor);
 
         this.onTrendClickListener = onTrendClickListener;
+        itemView.setOnClickListener(this);
     }
 
     @Override

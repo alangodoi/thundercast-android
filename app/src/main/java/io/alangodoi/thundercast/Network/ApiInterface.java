@@ -25,8 +25,8 @@ public interface ApiInterface {
     );
 
     @GET("episodes")
-    Call<Episode> episodes (
-            @Path("podcastId") int podcastId
+    Call<List<Episode>> episodes (
+            @Query("podcastId") int podcastId
     );
 
 //    @GET("{movie_id}/videos")

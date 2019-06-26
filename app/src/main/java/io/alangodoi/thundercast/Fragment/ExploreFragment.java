@@ -1,10 +1,13 @@
 package io.alangodoi.thundercast.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +16,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -24,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.alangodoi.thundercast.Activity.MainActivity;
+import io.alangodoi.thundercast.Activity.PodcastDetails;
 import io.alangodoi.thundercast.Adapter.TrendingLineAdapter;
 import io.alangodoi.thundercast.Adapter.ViewHolder.TrendingLineHolder;
 import io.alangodoi.thundercast.Model.Podcast;
@@ -46,6 +54,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
     private ImageView ivFeatured;
     private TextView tvFeaturedTitle, tvFeaturedAuthor;
     private RecyclerView recyclerView;
+    private ScrollView svExp;
 
     private TrendingLineAdapter trendingAdapter;
     private List<Podcast> trendinglist;
@@ -56,20 +65,12 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
     public static ExploreFragment newInstance(String param1, String param2) {
         ExploreFragment fragment = new ExploreFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     @Override
@@ -84,6 +85,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         ivFeatured = rootView.findViewById(R.id.ivFeatured);
         tvFeaturedTitle = rootView.findViewById(R.id.tvFeaturedTitle);
         tvFeaturedAuthor = rootView.findViewById(R.id.tvFeaturedAuthor);
+        svExp = rootView.findViewById(R.id.svExp);
 
         clSearchView.requestFocus();
 
@@ -107,6 +109,22 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
         getFeatured();
         getTrending();
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = getActivity().getWindow();
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(ContextCompat
+//                    .getColor(getActivity(), R.color.colorPrimaryDark));
+//            window.setNavigationBarColor(ContextCompat.getColor(getActivity(), R.color.colorWhite));
+//        }
+
+//        if playing
+        int paddingDp = 130;
+        float density = getActivity().getResources().getDisplayMetrics().density;
+        int paddingPixel = (int)(paddingDp * density);
+        svExp.setPadding(0,0,0,paddingPixel);
+//        svExp.setPadding(0,padding,0,0);
+
 
         return rootView;
     }
@@ -138,6 +156,15 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
     @Override
     public void onTrendClick(int position) {
         Log.d(TAG, "onTrendClick: " + position);
+        Intent intent = new Intent(getActivity(), PodcastDetails.class);
+        intent.putExtra("id", trendinglist.get(position).getId());
+        intent.putExtra("title", trendinglist.get(position).getTitle());
+        intent.putExtra("artistName", trendinglist.get(position).getArtistName());
+        intent.putExtra("description", trendinglist.get(position).getDescription());
+        intent.putExtra("artwork", trendinglist.get(position).getArtwork());
+        intent.putExtra("link", trendinglist.get(position).getLink());
+        intent.putExtra("copyright", trendinglist.get(position).getCopyright());
+        startActivity(intent);
     }
 
     public interface OnFragmentInteractionListener {

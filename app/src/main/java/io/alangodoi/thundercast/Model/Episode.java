@@ -39,6 +39,20 @@ public class Episode {
     @Expose
     private String updatedAt;
 
+    public Episode(Integer id, String title, String description, String releaseDate, String link, String audioFile, Integer length, String audioFileType, Integer podcastId, String createdAt, String updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.link = link;
+        this.audioFile = audioFile;
+        this.length = length;
+        this.audioFileType = audioFileType;
+        this.podcastId = podcastId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Integer getId() {
         return id;
     }

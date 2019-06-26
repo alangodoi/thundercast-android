@@ -1,74 +1,98 @@
 package io.alangodoi.thundercast.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.alangodoi.thundercast.Activity.PodcastDetails;
+import io.alangodoi.thundercast.Adapter.SubscriptionLineAdapter;
+import io.alangodoi.thundercast.Adapter.TrendingLineAdapter;
+import io.alangodoi.thundercast.Adapter.ViewHolder.SubscriptionLineHolder;
+import io.alangodoi.thundercast.Model.Podcast;
+import io.alangodoi.thundercast.Network.ApiClient;
+import io.alangodoi.thundercast.Network.ApiInterface;
 import io.alangodoi.thundercast.R;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PodcastsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PodcastsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class PodcastsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class PodcastsFragment extends Fragment implements SubscriptionLineHolder.OnSubscriptionClickListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String TAG = "PodcastsFragment";
 
     private OnFragmentInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private ApiInterface apiInterface;
+
+    private SubscriptionLineAdapter subscriptionAdapter;
+    private List<Podcast> subscriptionlist;
 
     public PodcastsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PodcastsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static PodcastsFragment newInstance(String param1, String param2) {
         PodcastsFragment fragment = new PodcastsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_podcasts, container, false);
+
+        View rootView = inflater.inflate(R.layout.fragment_podcasts, container,
+                false);
+
+        Toolbar toolbar = rootView.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.hint_subscriptions);
+
+        recyclerView = rootView.findViewById(R.id.rvSubscriptions);
+        subscriptionlist = new ArrayList<>();
+        subscriptionAdapter = new SubscriptionLineAdapter(getActivity(), subscriptionlist, this);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(subscriptionAdapter);
+
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+
+        getSubscriptions();
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = getActivity().getWindow();
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(getResources().getColor(R.color.colorWhite));
+//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//        }
+
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -92,18 +116,53 @@ public class PodcastsFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onSubClick(int position) {
+        Log.d(TAG, "onSubClick: " + position);
+        Intent intent = new Intent(getActivity(), PodcastDetails.class);
+        intent.putExtra("id", subscriptionlist.get(position).getId());
+        intent.putExtra("title", subscriptionlist.get(position).getTitle());
+        intent.putExtra("artistName", subscriptionlist.get(position).getArtistName());
+        intent.putExtra("description", subscriptionlist.get(position).getDescription());
+        intent.putExtra("artwork", subscriptionlist.get(position).getArtwork());
+        intent.putExtra("link", subscriptionlist.get(position).getLink());
+        intent.putExtra("copyright", subscriptionlist.get(position).getCopyright());
+        startActivity(intent);
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void getSubscriptions() {
+        Call<List<Podcast>> call = apiInterface.podcasts();
+
+        call.enqueue(new Callback<List<Podcast>>() {
+            @Override
+            public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                for (int i=0; i<response.body().size(); i++) {
+                    subscriptionlist.add(new Podcast(
+                            response.body().get(i).getId(),
+                            response.body().get(i).getArtistName(),
+                            response.body().get(i).getTitle(),
+                            response.body().get(i).getDescription(),
+                            response.body().get(i).getLink(),
+                            response.body().get(i).getFeed(),
+                            response.body().get(i).getArtwork(),
+                            response.body().get(i).getCopyright(),
+                            response.body().get(i).getCreatedAt(),
+                            response.body().get(i).getUpdatedAt()
+                    ));
+                }
+
+                subscriptionAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.toString());
+            }
+        });
     }
 }

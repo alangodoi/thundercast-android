@@ -28,7 +28,6 @@ public class TrendingLineAdapter extends RecyclerView.Adapter<TrendingLineHolder
         this.onTrendClickListener = onTrendClickListener;
     }
 
-
     @NonNull
     @Override
     public TrendingLineHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
