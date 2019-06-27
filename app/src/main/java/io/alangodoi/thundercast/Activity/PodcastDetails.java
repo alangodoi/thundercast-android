@@ -9,12 +9,17 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +41,13 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     private ApiInterface apiInterface;
 
     private ImageView ivPodcastDetailsLogo;
-    private TextView tvPodcastDetailsTitle, tvPodcastDetailsAuthor,
+    private TextView tvPodcastDetailsTitle, tvPodcastDetailsAuthor, tvPodcastDetailsLink,
             tvPodcastDetailsCategory, tvPodcastDetailsDescription;
 
     private EpisodeLineAdapter episodeAdapter;
     private RecyclerView recyclerView;
     private List<Episode> episodelist;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,15 +57,18 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         ivPodcastDetailsLogo = findViewById(R.id.ivPodcastDetailsLogo);
         tvPodcastDetailsTitle = findViewById(R.id.tvPodcastDetailsTitle);
         tvPodcastDetailsAuthor = findViewById(R.id.tvPodcastDetailsAuthor);
+        tvPodcastDetailsLink = findViewById(R.id.tvPodcastDetailsLink);
         tvPodcastDetailsCategory = findViewById(R.id.tvPodcastDetailsCategory);
         tvPodcastDetailsDescription = findViewById(R.id.tvPodcastDetailsDescription);
         recyclerView = findViewById(R.id.rvEpisodes);
+        progressBar = findViewById(R.id.progressBar);
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", 0);
         String artwork = intent.getStringExtra("artwork");
         String title = intent.getStringExtra("title");
         String artistName = intent.getStringExtra("artistName");
+        String link = intent.getStringExtra("link");
         String description = intent.getStringExtra("description");
 
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
@@ -90,12 +99,16 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
 
         tvPodcastDetailsTitle.setText(title);
         tvPodcastDetailsAuthor.setText(artistName);
+        tvPodcastDetailsLink.setText(link.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)",""));
         tvPodcastDetailsDescription.setText(description);
 
+        habilitarInteracao();
         getEpisodes(id);
     }
 
     private void getEpisodes(int podcast) {
+        progressBar.setVisibility(View.VISIBLE);
+        desabilitarInteracao();
         Call<List<Episode>> call = apiInterface.episodes(podcast);
 
         call.enqueue(new Callback<List<Episode>>() {
@@ -107,6 +120,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
                             response.body().get(i).getId(),
                             response.body().get(i).getTitle(),
                             response.body().get(i).getDescription(),
+                            response.body().get(i).getDuration(),
                             response.body().get(i).getReleaseDate(),
                             response.body().get(i).getLink(),
                             response.body().get(i).getAudioFile(),
@@ -119,11 +133,16 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
                 }
 
                 episodeAdapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                habilitarInteracao();
             }
 
             @Override
             public void onFailure(Call<List<Episode>> call, Throwable t) {
-
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                habilitarInteracao();
             }
         });
     }
@@ -131,5 +150,16 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     @Override
     public void onEpClick(int position) {
         Log.d(TAG, "onEpClick: " + position);
+
+        episodelist.get(position).getId();
+    }
+
+    private void desabilitarInteracao() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void habilitarInteracao() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }

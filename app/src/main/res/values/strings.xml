@@ -12,9 +12,12 @@
     <string name="hint_search_podcasts">Search Podcasts</string>
     <string name="hint_trending">Trending</string>
     <string name="hint_subscriptions">Subscriptions</string>
+    <string name="hint_subscribe">Subscribe</string>
 
     <!-- -->
     <string name="separator_dot">\u2022</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

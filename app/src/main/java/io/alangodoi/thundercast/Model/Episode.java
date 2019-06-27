@@ -14,6 +14,9 @@ public class Episode {
     @SerializedName("description")
     @Expose
     private String description;
+    @SerializedName("duration")
+    @Expose
+    private String duration;
     @SerializedName("releaseDate")
     @Expose
     private String releaseDate;
@@ -39,10 +42,11 @@ public class Episode {
     @Expose
     private String updatedAt;
 
-    public Episode(Integer id, String title, String description, String releaseDate, String link, String audioFile, Integer length, String audioFileType, Integer podcastId, String createdAt, String updatedAt) {
+    public Episode(Integer id, String title, String description, String duration, String releaseDate, String link, String audioFile, Integer length, String audioFileType, Integer podcastId, String createdAt, String updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.duration = duration;
         this.releaseDate = releaseDate;
         this.link = link;
         this.audioFile = audioFile;
@@ -75,6 +79,14 @@ public class Episode {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public String getReleaseDate() {

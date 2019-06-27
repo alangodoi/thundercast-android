@@ -3,17 +3,14 @@ package io.alangodoi.thundercast.Adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import java.util.List;
 
 import io.alangodoi.thundercast.Adapter.ViewHolder.EpisodeLineHolder;
+import io.alangodoi.thundercast.Helper.Helper;
 import io.alangodoi.thundercast.Model.Episode;
 import io.alangodoi.thundercast.R;
 
@@ -22,6 +19,7 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     private Context mContext;
     private List<Episode> episodesList;
     private EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener;
+    Helper helper;
 
     public EpisodeLineAdapter(Context mContext, List<Episode> episodesList, EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         this.mContext = mContext;
@@ -39,27 +37,25 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     @Override
     public void onBindViewHolder(final EpisodeLineHolder holder, int position) {
         Episode episodes = episodesList.get(position);
+        helper = new Helper();
 
         String[] wordCounter = episodes.getTitle().split(" ");
-//        Log.i("wordcount", "wc: " + wordCounter.length);
-        if (wordCounter.length > 7) {
+        if (wordCounter.length > 13) {
             StringBuilder title = new StringBuilder();
-            for (int i=0; i<wordCounter.length; i++) {
-                if (i % 7 == 0) {
-                    title.append(System.getProperty ("line.separator"));
-                }
+            for (int i=0; i<13; i++) {
+
                 title.append(wordCounter[i]);
                 title.append(" ");
-
             }
+            title.append("...");
             holder.epTitle.setText(title);
         } else {
             holder.epTitle.setText(episodes.getTitle());
         }
 
-//        holder.epTitle.setText(episodes.getTitle());
-        holder.epReleaseDate.setText(episodes.getReleaseDate());
-//        holder.epLength.setText(episodes.getLength());
+        holder.epReleaseDate.setText(helper.releaseDate(episodes.getReleaseDate()));
+        holder.epLength.setText(episodes.getDuration());
+//        holder.epReleaseDate.setText(episodes.getReleaseDate());
     }
 
     @Override

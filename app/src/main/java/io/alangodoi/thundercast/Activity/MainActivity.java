@@ -126,4 +126,10 @@ public class MainActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+//        super.onBackPressed();
+    }
 }

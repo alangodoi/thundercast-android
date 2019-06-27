@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -49,12 +52,17 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
     private OnFragmentInteractionListener mListener;
     private ApiInterface apiInterface;
-    private ConstraintLayout clSearchView;
+    private ConstraintLayout clSearchView, clFeatured, clBottom;
     private SearchView svExplore;
     private ImageView ivFeatured;
     private TextView tvFeaturedTitle, tvFeaturedAuthor;
     private RecyclerView recyclerView;
     private ScrollView svExp;
+    private ProgressBar progressBar;
+
+    private int featuredPodcastId = 0;
+    private String featuredPodcastTitle, featuredPodcastArtistName, featuredPodcastDescription,
+            featuredPodcastArtwork, featuredPodcastLink, featuredPodcastCopyright;
 
     private TrendingLineAdapter trendingAdapter;
     private List<Podcast> trendinglist;
@@ -81,11 +89,14 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 false);
 
         clSearchView = rootView.findViewById(R.id.clSearchView);
+        clFeatured = rootView.findViewById(R.id.clFeatured);
         svExplore = rootView.findViewById(R.id.svExplore);
         ivFeatured = rootView.findViewById(R.id.ivFeatured);
         tvFeaturedTitle = rootView.findViewById(R.id.tvFeaturedTitle);
         tvFeaturedAuthor = rootView.findViewById(R.id.tvFeaturedAuthor);
         svExp = rootView.findViewById(R.id.svExp);
+        clBottom = rootView.findViewById(R.id.clBottom);
+        progressBar = rootView.findViewById(R.id.progressBar);
 
         clSearchView.requestFocus();
 
@@ -126,6 +137,21 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 //        svExp.setPadding(0,padding,0,0);
 
 
+        clFeatured.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                podcastDetails(
+                        featuredPodcastId,
+                        featuredPodcastTitle,
+                        featuredPodcastArtistName,
+                        featuredPodcastDescription,
+                        featuredPodcastArtwork,
+                        featuredPodcastLink,
+                        featuredPodcastCopyright
+                );
+            }
+        });
+
         return rootView;
     }
 
@@ -156,15 +182,15 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
     @Override
     public void onTrendClick(int position) {
         Log.d(TAG, "onTrendClick: " + position);
-        Intent intent = new Intent(getActivity(), PodcastDetails.class);
-        intent.putExtra("id", trendinglist.get(position).getId());
-        intent.putExtra("title", trendinglist.get(position).getTitle());
-        intent.putExtra("artistName", trendinglist.get(position).getArtistName());
-        intent.putExtra("description", trendinglist.get(position).getDescription());
-        intent.putExtra("artwork", trendinglist.get(position).getArtwork());
-        intent.putExtra("link", trendinglist.get(position).getLink());
-        intent.putExtra("copyright", trendinglist.get(position).getCopyright());
-        startActivity(intent);
+        podcastDetails(
+                trendinglist.get(position).getId(),
+                trendinglist.get(position).getTitle(),
+                trendinglist.get(position).getArtistName(),
+                trendinglist.get(position).getDescription(),
+                trendinglist.get(position).getArtwork(),
+                trendinglist.get(position).getLink(),
+                trendinglist.get(position).getCopyright()
+        );
     }
 
     public interface OnFragmentInteractionListener {
@@ -173,6 +199,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
     }
 
     private void getFeatured() {
+        progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "getFeatured: GETTING FEATUREDS");
         Call<List<Podcast>> call = apiInterface.podcasts();
 
@@ -191,18 +218,29 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(ivFeatured);
 
+                featuredPodcastId = response.body().get(value).getId();
+                featuredPodcastTitle = response.body().get(value).getTitle();
+                featuredPodcastArtistName = response.body().get(value).getArtistName();
+                featuredPodcastDescription = response.body().get(value).getDescription();
+                featuredPodcastArtwork = response.body().get(value).getArtwork();
+                featuredPodcastLink = response.body().get(value).getLink();
+                featuredPodcastCopyright = response.body().get(value).getCopyright();
+
                 tvFeaturedTitle.setText(response.body().get(value).getTitle());
                 tvFeaturedAuthor.setText(response.body().get(value).getArtistName());
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.toString());
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
 
     private void getTrending() {
+        progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "getTrending: GETTING TRENDING");
         Call<List<Podcast>> call = apiInterface.podcasts();
 
@@ -226,12 +264,27 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 }
 
                 trendingAdapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
+                clBottom.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.toString());
+                progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void podcastDetails(int id, String title, String artistName, String description, String artwork, String link, String copyright) {
+        Intent intent = new Intent(getActivity(), PodcastDetails.class);
+        intent.putExtra("id", id);
+        intent.putExtra("title", title);
+        intent.putExtra("artistName", artistName);
+        intent.putExtra("description", description);
+        intent.putExtra("artwork", artwork);
+        intent.putExtra("link", link);
+        intent.putExtra("copyright", copyright);
+        startActivity(intent);
     }
 }

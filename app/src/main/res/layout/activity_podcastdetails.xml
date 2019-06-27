@@ -20,13 +20,26 @@
 
             <ImageView
                 android:id="@+id/ivPodcastDetailsLogo"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="150dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="16dp"
-                android:elevation="4dp"/>
+                android:elevation="4dp"
+                app:layout_constraintWidth_percent="0.32"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="70dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintWidth_percent="0.4"
+                android:text="@string/hint_subscribe"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/subscription_button"/>
 
             <TextView
                 android:id="@+id/tvPodcastDetailsTitle"
@@ -39,13 +52,23 @@
                 android:textSize="30sp"
                 android:textColor="@color/colorPrimaryDark"/>
 
+            <ImageView
+                android:id="@+id/ivPodcastDetailsMic"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsTitle"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_mic"
+                android:tint="@color/colorGreen"/>
+
             <TextView
                 android:id="@+id/tvPodcastDetailsAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsTitle"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginStart="16dp"/>
+                app:layout_constraintLeft_toRightOf="@+id/ivPodcastDetailsMic"
+                android:layout_marginStart="1dp"/>
 
             <TextView
                 android:id="@+id/tvDot1"
@@ -57,11 +80,29 @@
                 android:layout_marginEnd="5dp"
                 android:text="@string/separator_dot"/>
 
+            <ImageView
+                android:id="@+id/ivPodcastDetailsLink"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvDot1"
+                android:layout_marginStart="1dp"
+                android:src="@drawable/ic_link"
+                android:tint="@color/colorGreen"/>
+
+            <TextView
+                android:id="@+id/tvPodcastDetailsLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsTitle"
+                app:layout_constraintLeft_toRightOf="@+id/ivPodcastDetailsLink"
+                android:layout_marginStart="1dp"/>
+
             <TextView
                 android:id="@+id/tvPodcastDetailsCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsTitle"
+                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsLink"
                 app:layout_constraintLeft_toRightOf="@+id/tvDot1"
                 android:layout_marginStart="16dp"
                 android:textSize="12sp"/>
@@ -75,12 +116,6 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"/>
-
-            <TextView
-                android:id="@+id/tvPodcastDetailsLink"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsDescription"/>
 
             <!--<TextView-->
             <!--android:id="@+id/tvPodcastDetailsReleaseTime"-->
@@ -96,20 +131,29 @@
                 android:id="@+id/vSeparator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsLink"
-                android:layout_marginTop="1dp"
-                android:background="@color/colorGrayLight"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"/>
+                app:layout_constraintTop_toBottomOf="@+id/tvPodcastDetailsDescription"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorGrayLight" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/vSeparator"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rvEpisodes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/vSeparator"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="5dp"
                 tools:listitem="@layout/rv_episodes"
-                android:overScrollMode="never">
+                android:overScrollMode="never"
+                android:visibility="gone">
 
             </android.support.v7.widget.RecyclerView>
 
