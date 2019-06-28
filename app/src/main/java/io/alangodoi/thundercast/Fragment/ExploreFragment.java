@@ -28,6 +28,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -211,11 +213,17 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 Random rand = new Random();
                 int value = rand.nextInt(8);
 
+                RequestOptions options = new RequestOptions();
+                options
+//                .placeholder(R.drawable.place_holder)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(false)
+//                .error(R.drawable.error_place_holder)
+//                .transform(new CenterCrop())
+                        .transform(new RoundedCorners(8));
+
                 Glide.with(getActivity()).load(response.body().get(value).getArtwork())
-//                .placeholder(R.drawable.loading_animation)
-//                .error(R.drawable.popcorn)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(options)
                 .into(ivFeatured);
 
                 featuredPodcastId = response.body().get(value).getId();

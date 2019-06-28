@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -39,11 +41,25 @@ public class TrendingLineAdapter extends RecyclerView.Adapter<TrendingLineHolder
     public void onBindViewHolder(final TrendingLineHolder holder, int position) {
         Podcast trend = trendingList.get(position);
 
-        Glide.with(mContext).load(trend.getArtwork())
+        RequestOptions options = new RequestOptions();
+        options
+//                .placeholder(R.drawable.place_holder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+//                .error(R.drawable.error_place_holder)
+//                .transform(new CenterCrop())
+                .transform(new RoundedCorners(8));
+
+//        Glide.with(mContext).load(trend.getArtwork())
 //                .placeholder(R.drawable.loading_animation)
 //                .error(R.drawable.popcorn)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .transform(new RoundedCorners(5)
+//                .skipMemoryCache(false)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .into(holder.ivTrending);
+
+        Glide.with(mContext).load(trend.getArtwork())
+                .apply(options)
                 .into(holder.ivTrending);
 
         holder.tvTrendingTitle.setText(trend.getTitle());

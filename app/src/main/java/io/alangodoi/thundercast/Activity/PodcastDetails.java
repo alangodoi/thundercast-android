@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -92,9 +94,13 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(episodeAdapter);
 
-        Glide.with(this).load(artwork)
+        RequestOptions options = new RequestOptions();
+        options.diskCacheStrategy(DiskCacheStrategy.ALL)
                 .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .transform(new RoundedCorners(8));
+
+        Glide.with(this).load(artwork)
+                .apply(options)
                 .into(ivPodcastDetailsLogo);
 
         tvPodcastDetailsTitle.setText(title);

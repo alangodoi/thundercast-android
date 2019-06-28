@@ -13,6 +13,7 @@ public class EpisodeLineHolder extends RecyclerView.ViewHolder implements View.O
     EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener;
 
     public TextView epTitle, epReleaseDate, epLength;
+    public ImageView ivEpisodeFile;
 
     public EpisodeLineHolder(@NonNull View itemView, final EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         super(itemView);
@@ -20,6 +21,7 @@ public class EpisodeLineHolder extends RecyclerView.ViewHolder implements View.O
         epTitle = itemView.findViewById(R.id.tvEpisodeTitle);
         epReleaseDate = itemView.findViewById(R.id.tvEpisodeReleaseDate);
         epLength = itemView.findViewById(R.id.tvEpisodeLength);
+        ivEpisodeFile = itemView.findViewById(R.id.ivEpisodeFile);
 
         this.onEpisodeClickListener = onEpisodeClickListener;
         itemView.setOnClickListener(this);
