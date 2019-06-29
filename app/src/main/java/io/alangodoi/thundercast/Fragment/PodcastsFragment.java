@@ -28,6 +28,7 @@ import io.alangodoi.thundercast.Adapter.ViewHolder.SubscriptionLineHolder;
 import io.alangodoi.thundercast.Model.Podcast;
 import io.alangodoi.thundercast.Network.ApiClient;
 import io.alangodoi.thundercast.Network.ApiInterface;
+import io.alangodoi.thundercast.Preference.PrefManager;
 import io.alangodoi.thundercast.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,6 +44,8 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
 
     private SubscriptionLineAdapter subscriptionAdapter;
     private List<Podcast> subscriptionlist;
+
+    PrefManager prefManager;
 
     public PodcastsFragment() {
         // Required empty public constructor
@@ -91,6 +94,18 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
 //        }
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        prefManager = new PrefManager(getActivity());
+        if (!prefManager.getPlayerStatus().equals("stopped")) {
+            int paddingDp = 130;
+            float density = getActivity().getResources().getDisplayMetrics().density;
+            int paddingPixel = (int)(paddingDp * density);
+            recyclerView.setPadding(0,0,0,paddingPixel);
+        }
     }
 
     public void onButtonPressed(Uri uri) {

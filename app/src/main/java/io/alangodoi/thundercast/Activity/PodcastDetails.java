@@ -32,6 +32,7 @@ import io.alangodoi.thundercast.Model.Episode;
 import io.alangodoi.thundercast.Model.Podcast;
 import io.alangodoi.thundercast.Network.ApiClient;
 import io.alangodoi.thundercast.Network.ApiInterface;
+import io.alangodoi.thundercast.Preference.PrefManager;
 import io.alangodoi.thundercast.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +51,8 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     private RecyclerView recyclerView;
     private List<Episode> episodelist;
     private ProgressBar progressBar;
+
+    PrefManager prefManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         String description = intent.getStringExtra("description");
 
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        prefManager = new PrefManager(this);
 
         episodelist = new ArrayList<>();
         episodeAdapter = new EpisodeLineAdapter(this, episodelist, this);
@@ -110,6 +114,12 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
 
         habilitarInteracao();
         getEpisodes(id);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefManager.setActivityDetailsRunning(true);
     }
 
     private void getEpisodes(int podcast) {
@@ -158,6 +168,12 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         Log.d(TAG, "onEpClick: " + position);
 
         episodelist.get(position).getId();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        prefManager.setActivityDetailsRunning(false);
     }
 
     private void desabilitarInteracao() {

@@ -42,6 +42,7 @@ import io.alangodoi.thundercast.Adapter.ViewHolder.TrendingLineHolder;
 import io.alangodoi.thundercast.Model.Podcast;
 import io.alangodoi.thundercast.Network.ApiClient;
 import io.alangodoi.thundercast.Network.ApiInterface;
+import io.alangodoi.thundercast.Preference.PrefManager;
 import io.alangodoi.thundercast.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +69,8 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
     private TrendingLineAdapter trendingAdapter;
     private List<Podcast> trendinglist;
+
+    PrefManager prefManager;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -131,13 +134,6 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 //            window.setNavigationBarColor(ContextCompat.getColor(getActivity(), R.color.colorWhite));
 //        }
 
-//        if playing
-        int paddingDp = 130;
-        float density = getActivity().getResources().getDisplayMetrics().density;
-        int paddingPixel = (int)(paddingDp * density);
-        svExp.setPadding(0,0,0,paddingPixel);
-//        svExp.setPadding(0,padding,0,0);
-
 
         clFeatured.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,6 +151,18 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        prefManager = new PrefManager(getActivity());
+        if (!prefManager.getPlayerStatus().equals("stopped")) {
+            int paddingDp = 130;
+            float density = getActivity().getResources().getDisplayMetrics().density;
+            int paddingPixel = (int)(paddingDp * density);
+            svExp.setPadding(0,0,0,paddingPixel);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

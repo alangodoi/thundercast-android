@@ -1,5 +1,6 @@
 package io.alangodoi.thundercast.Activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -14,13 +15,14 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import io.alangodoi.thundercast.Fragment.ExploreFragment;
 import io.alangodoi.thundercast.Fragment.PlayerFragment;
 import io.alangodoi.thundercast.Fragment.PodcastsFragment;
 import io.alangodoi.thundercast.Fragment.ProfileFragment;
+import io.alangodoi.thundercast.Preference.PrefManager;
 import io.alangodoi.thundercast.R;
+import io.alangodoi.thundercast.Service.PlayerService;
 
 public class MainActivity
         extends AppCompatActivity
@@ -32,6 +34,12 @@ public class MainActivity
     Toolbar player;
     ImageView playPause, replay, forward, openPlayer;
     Fragment fragment;
+
+    PrefManager prefManager;
+
+    private String filename;
+
+//    PlayerService playerService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +56,60 @@ public class MainActivity
         forward = player.findViewById(R.id.ivForwardPodcast);
         openPlayer = player.findViewById(R.id.ivOpenPlayer);
 
+
+
+//        mediaPlayer = new MediaPlayer();
+
+//        mediaPlayer.setDataSource("/sdcard/path_to_song");
+
+//        mediaPlayer.prepareAsync();
+//        mediaPlayer.start();
+//        mediaPlayer.stop();
+//        mediaPlayer.pause();
+//        mediaPlayer.reset();
+//        mediaPlayer.getDuration();
+//        mediaPlayer.getCurrentPosition();
+//        mediaPlayer.seekTo(30);
+
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Player: Play");
-//                if playing
-                Glide.with(MainActivity.this).load(R.drawable.ic_pause)
-                        .skipMemoryCache(false)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(playPause);
+
+                if (prefManager.getPlayerStatus().equals("playing")) {
+                    Intent intent = new Intent(MainActivity.this, PlayerService.class);
+                    intent.putExtra("action", PlayerService.ACTION_PAUSE);
+                    startService(intent);
+
+                    Glide.with(MainActivity.this).load(R.drawable.ic_play)
+                            .into(playPause);
+
+                } else if (prefManager.getPlayerStatus().equals("paused")) {
+                    Intent intent = new Intent(MainActivity.this, PlayerService.class);
+                    intent.putExtra("action", PlayerService.ACTION_RESUME);
+                    intent.putExtra("filename", filename);
+                    startService(intent);
+
+                    Glide.with(MainActivity.this).load(R.drawable.ic_pause)
+                            .into(playPause);
+                }
+
+
+
+//                if (mediaPlayer.isPlaying()) {
+//                    Glide.with(MainActivity.this).load(R.drawable.ic_pause)
+//                            .skipMemoryCache(false)
+//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                            .into(playPause);
+//                } else {
+//                    Glide.with(MainActivity.this).load(R.drawable.ic_play)
+//                            .skipMemoryCache(false)
+//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                            .into(playPause);
+//                }
+
+
+
             }
         });
 
@@ -132,4 +185,27 @@ public class MainActivity
         finish();
 //        super.onBackPressed();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefManager = new PrefManager(this);
+        if (!prefManager.getPlayerStatus().equals("stopped")) {
+            player.setVisibility(View.VISIBLE);
+
+            if (prefManager.getPlayerStatus().equals("playing")){
+                Glide.with(MainActivity.this).load(R.drawable.ic_pause)
+                        .into(playPause);
+            } else if (prefManager.getPlayerStatus().equals("paused")) {
+                Glide.with(MainActivity.this).load(R.drawable.ic_play)
+                        .into(playPause);
+
+                filename = prefManager.getPlayingFile();
+            }
+
+        } else {
+            player.setVisibility(View.GONE);
+        }
+    }
+
 }

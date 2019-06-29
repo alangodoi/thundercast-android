@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import okhttp3.ResponseBody;
 
@@ -34,7 +33,7 @@ public class Helper {
         return month(month) + " " + day;
     }
 
-    private String month(int month){
+    private String month(int month) {
 
         ArrayList<String> months = new ArrayList<>();
         months.add("JANUARY");
