@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.alangodoi.thundercast">
+    package="br.com.eaglehorn.thundercast">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,16 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".Service.PlayerService"
+            android:name="br.com.eaglehorn.thundercast.Service.PlayerService"
             android:enabled="true"
             android:exported="true"></service>
 
         <activity
-            android:name=".Activity.MainActivity"
+            android:name="br.com.eaglehorn.thundercast.Activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activity.SplashScreen"
+            android:name="br.com.eaglehorn.thundercast.Activity.SplashScreen"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,8 +36,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.PodcastDetails" />
-        <activity android:name=".Activity.EpisodeDetailsActivity" />
+        <activity android:name="br.com.eaglehorn.thundercast.Activity.PodcastDetails" />
+        <activity android:name="br.com.eaglehorn.thundercast.Activity.EpisodeDetailsActivity" />
     </application>
 
 </manifest>

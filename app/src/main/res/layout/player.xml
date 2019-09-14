@@ -4,7 +4,7 @@
     <!--android:layout_height="match_parent"-->
     <!--xmlns:app="http://schemas.android.com/apk/res-auto">-->
 
-<android.support.v7.widget.Toolbar
+<androidx.appcompat.widget.Toolbar
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="80dp"
@@ -19,7 +19,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -76,8 +76,8 @@
                 android:src="@drawable/ic_playlist"
                 android:tint="@color/colorGray"/>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
 <!--</android.support.constraint.ConstraintLayout>-->
