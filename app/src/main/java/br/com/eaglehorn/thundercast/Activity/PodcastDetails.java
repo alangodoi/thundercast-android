@@ -1,9 +1,12 @@
 package br.com.eaglehorn.thundercast.Activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +40,9 @@ import retrofit2.Response;
 public class PodcastDetails extends AppCompatActivity implements EpisodeLineHolder.OnEpisodeClickListener {
 
     private static final String TAG = "PodcastDetails";
+
+    private static final int PERMISSION_REQUEST_STORAGE = 100;
+
     private ApiInterface apiInterface;
 
     private ImageView ivPodcastDetailsLogo;
@@ -109,6 +115,14 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         tvPodcastDetailsDescription.setText(description);
 
         habilitarInteracao();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_STORAGE);
+
+        }
         getEpisodes(id);
     }
 

@@ -13,17 +13,14 @@ import retrofit2.http.Url;
 public interface ApiInterface {
 
     @GET("podcasts")
-    Call<List<Podcast>> podcasts (
-    );
+    Call<List<Podcast>> podcasts ();
 
     @GET("featured")
-    Call<Podcast> featured (
-    );
+    Call<Podcast> featured ();
 
     //change to trending
     @GET("trending")
-    Call<List<Podcast>> trending (
-    );
+    Call<List<Podcast>> trending ();
 
     @GET("episodes")
     Call<List<Episode>> episodes (
