@@ -6,17 +6,19 @@ import android.view.View;
 import android.widget.ImageView;
 
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SubscriptionLineHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    OnSubscriptionClickListener onSubscriptionClickListener;
+    private OnSubscriptionClickListener onSubscriptionClickListener;
 
-    public ImageView ivPodcast;
+    @BindView(R.id.ivPodcast) public ImageView ivPodcast;
 
     public SubscriptionLineHolder(@NonNull View itemView, final SubscriptionLineHolder.OnSubscriptionClickListener onSubscriptionClickListener) {
         super(itemView);
 
-        ivPodcast = itemView.findViewById(R.id.ivPodcast);
+        ButterKnife.bind(this, itemView);
 
         this.onSubscriptionClickListener = onSubscriptionClickListener;
         itemView.setOnClickListener(this);

@@ -7,20 +7,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class TrendingLineHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    OnTrendClickListener onTrendClickListener;
+    private OnTrendClickListener onTrendClickListener;
 
-    public ImageView ivTrending;
-    public TextView tvTrendingTitle, tvTrendingAuthor;
+    @BindView(R.id.ivTrending) public ImageView ivTrending;
+    @BindView(R.id.tvTrendingTitle) public TextView tvTrendingTitle;
+    @BindView(R.id.tvTrendingAuthor) public TextView tvTrendingAuthor;
 
     public TrendingLineHolder(@NonNull View itemView, final TrendingLineHolder.OnTrendClickListener onTrendClickListener) {
         super(itemView);
 
-        ivTrending = itemView.findViewById(R.id.ivTrending);
-        tvTrendingTitle = itemView.findViewById(R.id.tvTrendingTitle);
-        tvTrendingAuthor = itemView.findViewById(R.id.tvTrendingAuthor);
+        ButterKnife.bind(this, itemView);
 
         this.onTrendClickListener = onTrendClickListener;
         itemView.setOnClickListener(this);
