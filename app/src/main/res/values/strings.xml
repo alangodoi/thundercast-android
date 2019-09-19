@@ -13,6 +13,7 @@
     <string name="hint_trending">Trending</string>
     <string name="hint_subscriptions">Subscriptions</string>
     <string name="hint_subscribe">Subscribe</string>
+    <string name="hint_unsubscribe">Unsubscribe</string>
     <string name="hint_support_developer">Support Developer</string>
 
     <!-- -->

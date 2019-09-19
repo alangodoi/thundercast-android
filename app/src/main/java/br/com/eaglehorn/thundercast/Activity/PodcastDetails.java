@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,13 +29,17 @@ import java.util.List;
 
 import br.com.eaglehorn.thundercast.Adapter.EpisodeLineAdapter;
 import br.com.eaglehorn.thundercast.Adapter.ViewHolder.EpisodeLineHolder;
+import br.com.eaglehorn.thundercast.Database.DB;
 import br.com.eaglehorn.thundercast.Model.Episode;
+import br.com.eaglehorn.thundercast.Model.Podcast;
+import br.com.eaglehorn.thundercast.Model.Subscription;
 import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,6 +63,12 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     @BindView(R.id.tvPodcastDetailsDescription) TextView tvPodcastDetailsDescription;
     @BindView(R.id.rvEpisodes) RecyclerView recyclerView;
     @BindView(R.id.progressBar) ProgressBar progressBar;
+    @BindView(R.id.btnSubscribe) Button btnSubscribe;
+
+    private int id;
+
+    DB db;
+    String title, description, artistName, link, artwork;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,17 +77,19 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", 0);
-        String artwork = intent.getStringExtra("artwork");
-        String title = intent.getStringExtra("title");
-        String artistName = intent.getStringExtra("artistName");
-        String link = intent.getStringExtra("link");
-        String description = intent.getStringExtra("description");
+        id = intent.getIntExtra("id", 0);
+        artwork = intent.getStringExtra("artwork");
+        title = intent.getStringExtra("title");
+        artistName = intent.getStringExtra("artistName");
+        link = intent.getStringExtra("link");
+        description = intent.getStringExtra("description");
 
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         prefManager = new PrefManager(this);
+        db = new DB(this);
 
         episodelist = new ArrayList<>();
+
         episodeAdapter = new EpisodeLineAdapter(this, episodelist, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
 
@@ -112,6 +125,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
                     PERMISSION_REQUEST_STORAGE);
 
         }
+
         getEpisodes(id);
     }
 
@@ -119,6 +133,10 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     protected void onResume() {
         super.onResume();
         prefManager.setActivityDetailsRunning(true);
+
+        if (db.isSubscribed(new Subscription(id))) {
+            btnSubscribe.setText(getString(R.string.hint_unsubscribe));
+        }
     }
 
     private void getEpisodes(int podcast) {
@@ -160,6 +178,50 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
                 habilitarInteracao();
             }
         });
+    }
+
+    @OnClick(R.id.btnSubscribe)
+    void subscribe() {
+
+        if (!db.isSubscribed(new Subscription(id))) {
+            Log.d(TAG, "subscribe: " + id);
+
+            long insertedPodcastId = db.insertPodcast(new Podcast(
+                    id,
+                    artistName,
+                    title,
+                    description,
+                    link,
+                    artwork
+            ));
+
+            if (insertedPodcastId > 0) {
+                long subscriptionId = db.insertSubscription(new Subscription(
+                        id
+                ));
+
+                if (subscriptionId > 0) {
+                    btnSubscribe.setText(getString(R.string.hint_unsubscribe));
+                }
+            } else {
+
+                //TODO Error message
+
+            }
+        } else {
+
+            if (db.removeSubscription(new Subscription(id))) {
+                btnSubscribe.setText(getString(R.string.hint_subscribe));
+
+                db.removePodcast(new Podcast(
+                        id
+                ));
+
+                //TODO Success message
+            }
+
+        }
+
     }
 
     @Override
