@@ -47,7 +47,7 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rvSubscriptions) RecyclerView recyclerView;
 
-    DB db;
+    private DB db;
 
     public PodcastsFragment() {
         // Required empty public constructor
@@ -75,18 +75,7 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.hint_subscriptions);
 
-        db = new DB(getActivity());
-        subscriptionlist = new ArrayList<>();
 
-        subscriptionlist = db.getPodcasts();
-        subscriptionAdapter = new SubscriptionLineAdapter(getActivity(), subscriptionlist, this);
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(subscriptionAdapter);
-
-        apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
 //        getSubscriptions();
 
@@ -110,6 +99,19 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
             int paddingPixel = (int)(paddingDp * density);
             recyclerView.setPadding(0,0,0,paddingPixel);
         }
+
+        db = new DB(getActivity());
+        subscriptionlist = new ArrayList<>();
+
+        subscriptionlist = db.getPodcasts();
+        subscriptionAdapter = new SubscriptionLineAdapter(getActivity(), subscriptionlist, this);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(subscriptionAdapter);
+
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
     }
 
     public void onButtonPressed(Uri uri) {
