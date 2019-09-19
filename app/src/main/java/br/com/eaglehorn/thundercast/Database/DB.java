@@ -86,6 +86,44 @@ public class DB {
                 new String[]{String.valueOf(podcast.getId())}) > 0;
     }
 
+    public List<Podcast> getPodcasts() {
+        List<Podcast> list = new ArrayList<>();
+
+        String[] columns = new String[]
+                {"_id", "eid", "title", "artistName", "description", "link", "artwork"};
+
+        Cursor cursor = db.query(
+                "Podcasts",
+                columns,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Verify if there are results
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+
+            do {
+                Podcast podcast = new Podcast();
+                podcast.setId(cursor.getInt(1));
+                podcast.setTitle(cursor.getString(2));
+                podcast.setArtistName(cursor.getString(3));
+                podcast.setDescription(cursor.getString(4));
+                podcast.setLink(cursor.getString(5));
+                podcast.setArtwork(cursor.getString(6));
+
+                list.add(podcast);
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        return(list);
+    }
+
 //    public List<Lecture> getLectures() {
 //        List<Lecture> list = new ArrayList<>();
 //        String[] columns = new String[]{"_id", "speakerId", "name", "description", "period", "time", "room", "speakerId"};

@@ -35,6 +35,8 @@ public class Podcast {
     @Expose
     private String updatedAt;
 
+    public Podcast(){}
+
     public Podcast(Integer id, String artistName, String title, String description, String link, String feed, String artwork, String copyright, String createdAt, String updatedAt) {
         this.id = id;
         this.artistName = artistName;

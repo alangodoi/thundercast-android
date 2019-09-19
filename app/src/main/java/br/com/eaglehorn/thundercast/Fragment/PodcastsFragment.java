@@ -21,6 +21,7 @@ import java.util.List;
 import br.com.eaglehorn.thundercast.Activity.PodcastDetails;
 import br.com.eaglehorn.thundercast.Adapter.SubscriptionLineAdapter;
 import br.com.eaglehorn.thundercast.Adapter.ViewHolder.SubscriptionLineHolder;
+import br.com.eaglehorn.thundercast.Database.DB;
 import br.com.eaglehorn.thundercast.Model.Podcast;
 import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
@@ -45,6 +46,8 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rvSubscriptions) RecyclerView recyclerView;
+
+    DB db;
 
     public PodcastsFragment() {
         // Required empty public constructor
@@ -72,7 +75,10 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.hint_subscriptions);
 
+        db = new DB(getActivity());
         subscriptionlist = new ArrayList<>();
+
+        subscriptionlist = db.getPodcasts();
         subscriptionAdapter = new SubscriptionLineAdapter(getActivity(), subscriptionlist, this);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
@@ -82,7 +88,7 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
 
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
-        getSubscriptions();
+//        getSubscriptions();
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            Window window = getActivity().getWindow();
