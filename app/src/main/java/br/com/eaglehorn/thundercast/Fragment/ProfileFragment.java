@@ -9,28 +9,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
 
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.formats.NativeAdOptions;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
+
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import br.com.eaglehorn.thundercast.R;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ProfileFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
@@ -47,7 +40,8 @@ public class ProfileFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private InterstitialAd mInterstitialAd;
-    private Button btnAds;
+//    private Button btnAds;
+//    @BindView(R.id.btnAds) Button btnAds;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -87,6 +81,7 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        ButterKnife.bind(this, rootView);
         // Inflate the layout for this fragment
 //        return inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -141,22 +136,32 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        btnAds = rootView.findViewById(R.id.btnAds);
+//        btnAds = rootView.findViewById(R.id.btnAds);
 
-        btnAds.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Supporting");
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                } else {
-                    Log.d(TAG, "The interstitial wasn't loaded yet.");
-                }
-            }
-        });
+//        btnAds.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "onClick: Supporting");
+//                if (mInterstitialAd.isLoaded()) {
+//                    mInterstitialAd.show();
+//                } else {
+//                    Log.d(TAG, "The interstitial wasn't loaded yet.");
+//                }
+//            }
+//        });
 
 
         return rootView;
+    }
+
+    @OnClick(R.id.btnAds)
+    void click() {
+            Log.d(TAG, "onClick: Supporting");
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+                Log.d(TAG, "The interstitial wasn't loaded yet.");
+            }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

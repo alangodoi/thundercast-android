@@ -36,6 +36,8 @@ import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,13 +49,6 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
     private OnFragmentInteractionListener mListener;
     private ApiInterface apiInterface;
-    private ConstraintLayout clSearchView, clFeatured, clBottom;
-    private SearchView svExplore;
-    private ImageView ivFeatured;
-    private TextView tvFeaturedTitle, tvFeaturedAuthor;
-    private RecyclerView recyclerView;
-    private ScrollView svExp;
-    private ProgressBar progressBar;
 
     private int featuredPodcastId = 0;
     private String featuredPodcastTitle, featuredPodcastArtistName, featuredPodcastDescription,
@@ -62,7 +57,18 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
     private TrendingLineAdapter trendingAdapter;
     private List<Podcast> trendinglist;
 
-    PrefManager prefManager;
+    private PrefManager prefManager;
+
+    @BindView(R.id.clSearchView) ConstraintLayout clSearchView;
+    @BindView(R.id.clFeatured) ConstraintLayout clFeatured;
+    @BindView(R.id.clBottom) ConstraintLayout clBottom;
+    @BindView(R.id.svExplore) SearchView svExplore;
+    @BindView(R.id.ivFeatured) ImageView ivFeatured;
+    @BindView(R.id.tvFeaturedTitle) TextView tvFeaturedTitle;
+    @BindView(R.id.tvFeaturedAuthor) TextView tvFeaturedAuthor;
+    @BindView(R.id.rvTrending) RecyclerView recyclerView;
+    @BindView(R.id.svExp) ScrollView svExp;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -84,16 +90,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
         View rootView = inflater.inflate(R.layout.fragment_explore, container,
                 false);
-
-        clSearchView = rootView.findViewById(R.id.clSearchView);
-        clFeatured = rootView.findViewById(R.id.clFeatured);
-        svExplore = rootView.findViewById(R.id.svExplore);
-        ivFeatured = rootView.findViewById(R.id.ivFeatured);
-        tvFeaturedTitle = rootView.findViewById(R.id.tvFeaturedTitle);
-        tvFeaturedAuthor = rootView.findViewById(R.id.tvFeaturedAuthor);
-        svExp = rootView.findViewById(R.id.svExp);
-        clBottom = rootView.findViewById(R.id.clBottom);
-        progressBar = rootView.findViewById(R.id.progressBar);
+        ButterKnife.bind(this, rootView);
 
         clSearchView.requestFocus();
 
@@ -101,8 +98,6 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         trendinglist = new ArrayList<>();
         trendingAdapter = new TrendingLineAdapter(getActivity(), trendinglist, this);
 
-//        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
-//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity()) {
             @Override
             public boolean canScrollVertically() {
@@ -127,20 +122,15 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 //        }
 
 
-        clFeatured.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                podcastDetails(
-                        featuredPodcastId,
-                        featuredPodcastTitle,
-                        featuredPodcastArtistName,
-                        featuredPodcastDescription,
-                        featuredPodcastArtwork,
-                        featuredPodcastLink,
-                        featuredPodcastCopyright
-                );
-            }
-        });
+        clFeatured.setOnClickListener(v -> podcastDetails(
+                featuredPodcastId,
+                featuredPodcastTitle,
+                featuredPodcastArtistName,
+                featuredPodcastDescription,
+                featuredPodcastArtwork,
+                featuredPodcastLink,
+                featuredPodcastCopyright
+        ));
 
         return rootView;
     }

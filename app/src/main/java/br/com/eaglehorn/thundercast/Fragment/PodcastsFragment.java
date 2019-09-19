@@ -26,6 +26,8 @@ import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,13 +37,14 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
     private static final String TAG = "PodcastsFragment";
 
     private OnFragmentInteractionListener mListener;
-    private RecyclerView recyclerView;
     private ApiInterface apiInterface;
-
     private SubscriptionLineAdapter subscriptionAdapter;
     private List<Podcast> subscriptionlist;
 
-    PrefManager prefManager;
+    private PrefManager prefManager;
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.rvSubscriptions) RecyclerView recyclerView;
 
     public PodcastsFragment() {
         // Required empty public constructor
@@ -64,12 +67,11 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
 
         View rootView = inflater.inflate(R.layout.fragment_podcasts, container,
                 false);
+        ButterKnife.bind(this, rootView);
 
-        Toolbar toolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.hint_subscriptions);
 
-        recyclerView = rootView.findViewById(R.id.rvSubscriptions);
         subscriptionlist = new ArrayList<>();
         subscriptionAdapter = new SubscriptionLineAdapter(getActivity(), subscriptionlist, this);
 
