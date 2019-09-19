@@ -8,24 +8,27 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SplashScreen extends AppCompatActivity {
 
-    ProgressBar progressBar;
+//    ProgressBar progressBar;
+    @BindView(R.id.pbSplash) ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splashscreen);
-        views();
+        ButterKnife.bind(this);
 
         Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
                     progressBar.setVisibility(View.VISIBLE);
-                    sleep(4500);
+                    sleep(2000);
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
@@ -37,7 +40,4 @@ public class SplashScreen extends AppCompatActivity {
         thread.start();
     }
 
-    private void views() {
-        progressBar = findViewById(R.id.pbSplash);
-    }
 }
