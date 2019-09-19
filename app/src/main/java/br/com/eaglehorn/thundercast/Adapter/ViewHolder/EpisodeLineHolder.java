@@ -7,21 +7,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class EpisodeLineHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener;
+    private EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener;
 
-    public TextView epTitle, epReleaseDate, epLength;
-    public ImageView ivEpisodeFile;
+    @BindView(R.id.tvEpisodeTitle) public TextView epTitle;
+    @BindView(R.id.tvEpisodeReleaseDate) public TextView epReleaseDate;
+    @BindView(R.id.tvEpisodeLength) public TextView epLength;
+    @BindView(R.id.ivEpisodeFile) public ImageView ivEpisodeFile;
 
     public EpisodeLineHolder(@NonNull View itemView, final EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         super(itemView);
 
-        epTitle = itemView.findViewById(R.id.tvEpisodeTitle);
-        epReleaseDate = itemView.findViewById(R.id.tvEpisodeReleaseDate);
-        epLength = itemView.findViewById(R.id.tvEpisodeLength);
-        ivEpisodeFile = itemView.findViewById(R.id.ivEpisodeFile);
+        ButterKnife.bind(this, itemView);
 
         this.onEpisodeClickListener = onEpisodeClickListener;
         itemView.setOnClickListener(this);
