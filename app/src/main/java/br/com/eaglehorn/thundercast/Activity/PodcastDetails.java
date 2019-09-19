@@ -33,6 +33,8 @@ import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,31 +46,24 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     private static final int PERMISSION_REQUEST_STORAGE = 100;
 
     private ApiInterface apiInterface;
-
-    private ImageView ivPodcastDetailsLogo;
-    private TextView tvPodcastDetailsTitle, tvPodcastDetailsAuthor, tvPodcastDetailsLink,
-            tvPodcastDetailsCategory, tvPodcastDetailsDescription;
-
     private EpisodeLineAdapter episodeAdapter;
-    private RecyclerView recyclerView;
     private List<Episode> episodelist;
-    private ProgressBar progressBar;
-
     PrefManager prefManager;
+
+    @BindView(R.id.ivPodcastDetailsLogo) ImageView ivPodcastDetailsLogo;
+    @BindView(R.id.tvPodcastDetailsTitle) TextView tvPodcastDetailsTitle;
+    @BindView(R.id.tvPodcastDetailsAuthor) TextView tvPodcastDetailsAuthor;
+    @BindView(R.id.tvPodcastDetailsLink) TextView tvPodcastDetailsLink;
+    @BindView(R.id.tvPodcastDetailsCategory) TextView tvPodcastDetailsCategory;
+    @BindView(R.id.tvPodcastDetailsDescription) TextView tvPodcastDetailsDescription;
+    @BindView(R.id.rvEpisodes) RecyclerView recyclerView;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_podcastdetails);
-
-        ivPodcastDetailsLogo = findViewById(R.id.ivPodcastDetailsLogo);
-        tvPodcastDetailsTitle = findViewById(R.id.tvPodcastDetailsTitle);
-        tvPodcastDetailsAuthor = findViewById(R.id.tvPodcastDetailsAuthor);
-        tvPodcastDetailsLink = findViewById(R.id.tvPodcastDetailsLink);
-        tvPodcastDetailsCategory = findViewById(R.id.tvPodcastDetailsCategory);
-        tvPodcastDetailsDescription = findViewById(R.id.tvPodcastDetailsDescription);
-        recyclerView = findViewById(R.id.rvEpisodes);
-        progressBar = findViewById(R.id.progressBar);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", 0);
@@ -85,12 +80,6 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         episodeAdapter = new EpisodeLineAdapter(this, episodelist, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
 
-//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this) {
-//            @Override
-//            public boolean canScrollVertically() {
-//                return false;
-//            }
-//        };
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 ((LinearLayoutManager) mLayoutManager).getOrientation());
 
