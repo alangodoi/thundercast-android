@@ -27,6 +27,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_PAUSE;
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_RESUME;
+
 public class MainActivity
         extends AppCompatActivity
         implements ExploreFragment.OnFragmentInteractionListener,
@@ -43,12 +46,8 @@ public class MainActivity
     @BindView(R.id.nav_view) BottomNavigationView navView;
 
     Fragment fragment;
-
     PrefManager prefManager;
-
     private String filename;
-
-//    PlayerService playerService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,8 @@ public class MainActivity
 
         if (prefManager.getPlayerStatus().equals("playing")) {
             Intent intent = new Intent(MainActivity.this, PlayerService.class);
-            intent.putExtra("action", PlayerService.ACTION_PAUSE);
+//            intent.putExtra("action", PlayerService.ACTION_PAUSE);
+            intent.setAction(ACTION_PAUSE);
             startService(intent);
 
             Glide.with(MainActivity.this).load(R.drawable.ic_play)
@@ -75,7 +75,8 @@ public class MainActivity
 
         } else if (prefManager.getPlayerStatus().equals("paused")) {
             Intent intent = new Intent(MainActivity.this, PlayerService.class);
-            intent.putExtra("action", PlayerService.ACTION_RESUME);
+//            intent.putExtra("action", PlayerService.ACTION_RESUME);
+            intent.setAction(ACTION_RESUME);
             intent.putExtra("filename", filename);
             startService(intent);
 

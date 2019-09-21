@@ -29,6 +29,8 @@
             android:enabled="true"
             android:exported="true"></service>
 
+        <receiver android:name=".BroadcastReceiver.NotificationReceiver" />
+
         <activity
             android:name="br.com.eaglehorn.thundercast.Activity.MainActivity"
             android:label="@string/title_activity_main"

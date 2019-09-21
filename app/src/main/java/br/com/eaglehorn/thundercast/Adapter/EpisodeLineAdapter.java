@@ -30,6 +30,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_PAUSE;
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_PLAY;
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_RESUME;
+import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_STOP;
+
 public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> {
 
     private static final String TAG = "EpisodeLineAdapter";
@@ -136,18 +141,22 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                                     episodes.getReleaseDate() +
                                     ".mp3")) {
 
-                                intent.putExtra("action", PlayerService.ACTION_PAUSE);
+//                                intent.putExtra("action", ACTION_PAUSE);
+                                intent.setAction(ACTION_PAUSE);
                                 mContext.startService(intent);
                                 Glide.with(mContext).load(R.drawable.ic_play)
                                         .into(holder.ivEpisodeFile);
                             } else {
                                 // Stop and release
-                                intent.putExtra("action", PlayerService.ACTION_STOP);
+//                                intent.putExtra("action", PlayerService.ACTION_STOP);
+                                intent.setAction(ACTION_STOP);
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
                                 // Play other file
-                                intent.putExtra("action", PlayerService.ACTION_PLAY);
+//                                intent.putExtra("action", PlayerService.ACTION_PLAY);
+                                intent.setAction(ACTION_PLAY);
+                                intent.putExtra("title", episodes.getTitle());
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
@@ -162,11 +171,13 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                                     episodes.getReleaseDate() +
                                     ".mp3")) {
 
-                                intent.putExtra("action", PlayerService.ACTION_STOP);
+//                                intent.putExtra("action", ACTION_STOP);
+                                intent.setAction(ACTION_STOP);
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
-                                intent.putExtra("action", PlayerService.ACTION_RESUME);
+//                                intent.putExtra("action", PlayerService.ACTION_RESUME);
+                                intent.setAction(ACTION_RESUME);
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
@@ -174,12 +185,15 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                                         .into(holder.ivEpisodeFile);
                             } else {
                                 // Stop and release
-                                intent.putExtra("action", PlayerService.ACTION_STOP);
+//                                intent.putExtra("action", ACTION_STOP);
+                                intent.setAction(ACTION_STOP);
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
                                 // Play other file
-                                intent.putExtra("action", PlayerService.ACTION_PLAY);
+//                                intent.putExtra("action", ACTION_PLAY);
+                                intent.setAction(ACTION_PLAY);
+                                intent.putExtra("title", episodes.getTitle());
                                 intent.putExtra("filename", fileName);
                                 mContext.startService(intent);
 
@@ -189,7 +203,9 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
 
                             break;
                         case "stopped":
-                            intent.putExtra("action", PlayerService.ACTION_PLAY);
+//                            intent.putExtra("action", ACTION_PLAY);
+                            intent.setAction(ACTION_PLAY);
+                            intent.putExtra("title", episodes.getTitle());
                             intent.putExtra("filename", fileName);
                             mContext.startService(intent);
                             Glide.with(mContext).load(R.drawable.ic_pause)

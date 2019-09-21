@@ -17,6 +17,7 @@ public class PrefManager {
 
     private static final String IS_PLAYING = "playerStatus";
     private static final String FILE_PLAYING = "playingFile";
+    private static final String TITLE_PLAYING = "playingTitle";
     private static final String ACTIVITY_DETAILS = "activityDetails";
     private static final String TRACK_POSITION = "trackCurrentPosition";
 
@@ -61,5 +62,14 @@ public class PrefManager {
     public void setCurrentPosition(int currentPosition) {
         editor.putInt(TRACK_POSITION, currentPosition);
         editor.apply();
+    }
+
+    public void setPlayingTitle(String title) {
+        editor.putString(TITLE_PLAYING, title);
+        editor.apply();
+    }
+
+    public String getPlayingTitle() {
+        return pref.getString(TITLE_PLAYING, "title");
     }
 }

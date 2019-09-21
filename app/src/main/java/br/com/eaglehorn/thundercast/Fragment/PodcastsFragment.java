@@ -75,8 +75,6 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.hint_subscriptions);
 
-
-
 //        getSubscriptions();
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -1,32 +1,41 @@
 package br.com.eaglehorn.thundercast.Service;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import java.io.File;
 import java.io.IOException;
 
+import br.com.eaglehorn.thundercast.Activity.MainActivity;
+import br.com.eaglehorn.thundercast.BroadcastReceiver.NotificationReceiver;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
+import br.com.eaglehorn.thundercast.R;
 
 public class PlayerService extends Service implements MediaPlayer.OnPreparedListener {
 
-    MediaPlayer mediaPlayer;
+    private static final String TAG = "PlayerService";
 
 //    public static final String ACTION_ISPLAYING = "io.alangodoi.thundercast.action.ISPLAYING";
-    public static final String ACTION_PLAY = "io.alangodoi.thundercast.action.PLAY";
-    public static final String ACTION_PAUSE = "io.alangodoi.thundercast.action.PAUSE";
-    public static final String ACTION_RESUME = "io.alangodoi.thundercast.action.RESUME";
-    public static final String ACTION_STOP = "io.alangodoi.thundercast.action.STOP";
+    public static final String ACTION_PLAY = "br.com.eaglehorn.thundercast.action.PLAY";
+    public static final String ACTION_PAUSE = "br.com.eaglehorn.thundercast.action.PAUSE";
+    public static final String ACTION_RESUME = "br.com.eaglehorn.thundercast.action.RESUME";
+    public static final String ACTION_STOP = "br.com.eaglehorn.thundercast.action.STOP";
 
+    MediaPlayer mediaPlayer;
     PrefManager prefManager;
-
-//    public PlayerService() {
-//    }
+    BroadcastReceiver nofiticationReceiver;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -43,6 +52,9 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     @Override
     public void onCreate() {
         Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
+
+        nofiticationReceiver = new NotificationReceiver();
+
         super.onCreate();
     }
 
@@ -50,35 +62,117 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
 
-        String action = intent.getStringExtra("action");
+        Log.d(TAG, "onStartCommand: ");
 
-//        if (action.equals(ACTION_PLAY)) play("teste");
-        if (action.equals(ACTION_PLAY)) play(intent.getStringExtra("filename"), "new");
-        else if (action.equals(ACTION_PAUSE)) pause();
-        else if (action.equals(ACTION_RESUME)) resume(intent.getStringExtra("filename"));
-        else if (action.equals(ACTION_STOP)) stop();
+        String action = intent.getAction();
+        Log.d(TAG, "onStartCommand: " + action);
 
-//        if (action.equals(ACTION_TOGGLE_PLAYBACK)) processTogglePlaybackRequest();
-//        else if (action.equals(ACTION_PLAY)) processPlayRequest();
-//        else if (action.equals(ACTION_PAUSE)) processPauseRequest();
-//        else if (action.equals(ACTION_SKIP)) processSkipRequest();
-//        else if (action.equals(ACTION_STOP)) processStopRequest();
-//        else if (action.equals(ACTION_REWIND)) processRewindRequest();
-//        else if (action.equals(ACTION_URL)) processAddRequest(intent);
+        prefManager = new PrefManager(this);
 
-//        return super.onStartCommand(intent, flags, startId);
+        if (action.equals(ACTION_PLAY)) {
+            String title = intent.getStringExtra("title");
+            play(intent.getStringExtra("filename"), "new");
+            prefManager.setPlayingTitle(title);
+        } else if (action.equals(ACTION_PAUSE)) {
+            pause();
+        } else if (action.equals(ACTION_RESUME)) {
+            resume(prefManager.getPlayingFile());
+        } else if (action.equals(ACTION_STOP)) {
+            stop();
+        }
+
+
+        createNotification();
+
         return Service.START_NOT_STICKY;
+    }
+
+    private void createNotification() {
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+
+        Intent resumeIntent = new Intent(this, NotificationReceiver.class);
+        resumeIntent.setAction(ACTION_RESUME);
+
+        Intent pauseIntent = new Intent(this, NotificationReceiver.class);
+        pauseIntent.setAction(ACTION_PAUSE);
+
+        Intent stopIntent = new Intent(this, NotificationReceiver.class);
+        stopIntent.setAction(ACTION_STOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                notificationIntent,
+                0);
+
+
+        PendingIntent resumePendingIntent =
+                PendingIntent.getBroadcast(this, 0, resumeIntent, 0);
+
+        PendingIntent pausePendingIntent =
+                PendingIntent.getBroadcast(this, 0, pauseIntent, 0);
+
+        PendingIntent stopPendingIntent =
+                PendingIntent.getBroadcast(this, 0, stopIntent, 0);
+
+
+        // Action to play podcast
+//        NotificationCompat.Action playAction =
+//                new NotificationCompat.Action.Builder(
+//                        R.drawable.ic_play,
+//                        "Play",
+//                        pendingIntent)
+//                        .build();
+
+        // Action to pause podcast
+//        NotificationCompat.Action pauseAction =
+//                new NotificationCompat.Action.Builder(
+//                        R.drawable.ic_pause,
+//                        "Pause",
+//                        pendingIntent)
+//                        .build();
+
+        // Action to stop podcast
+//        NotificationCompat.Action stopAction =
+//                new NotificationCompat.Action.Builder(
+//                        R.drawable.ic_stop,
+//                        "Stop",
+//                        stopService)
+//                        .build();
+
+
+
+//        Notification notification = new Notification.Builder(this, CHANNEL_ID)
+//                .setContentTitle("TITLE")
+//                .setContentText("TEXT")
+//                .setSmallIcon(R.drawable.ic_launcher_foreground)
+//                .setContentIntent(pendingIntent);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.flash)
+                .setContentTitle(prefManager.getPlayingTitle())
+//                .setContentText("Doing some work...")
+                .setContentIntent(pendingIntent)
+//                .addAction(playAction)
+//                .addAction(pauseAction)
+//                .addAction(stopAction)
+                .addAction(R.drawable.ic_play, "Resume",
+                        resumePendingIntent)
+                .addAction(R.drawable.ic_pause, "Pause",
+                        pausePendingIntent)
+                .addAction(R.drawable.ic_stop, "Stop",
+                        stopPendingIntent)
+                .build();
+
+        startForeground(1, notification);
     }
 
     @Override
     public void onDestroy() {
         Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
         super.onDestroy();
-//        mediaPlayer.stop();
-        updatePlayerStatus("stopped");
-        mediaPlayer.release();
-        mediaPlayer = null;
-
+        stopForeground(true);
     }
 
     @Override
@@ -87,16 +181,6 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         mp.start();
         updatePlayerStatus("playing");
     }
-
-//    private static void notification() {
-//
-//        Notification notification = new Notification.Builder(context)
-//                .setContentText(message)
-//                .setSmallIcon(icon)
-//                .setWhen(when)
-//                .build();
-//
-//    }
 
     public void updatePlayerStatus(String status) {
         prefManager = new PrefManager(this);
@@ -143,13 +227,17 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     public void resume(String filename) {
+        Log.d(TAG, "resume: ");
         if (mediaPlayer != null) {
+            Log.d(TAG, "resume: mediaPlayer not NULL");
             goToPosition();
             mediaPlayer.start();
             updatePlayerStatus("playing");
         } else {
+            Log.d(TAG, "resume: mediaPlayer NULL");
             play(filename, "resume");
         }
+
     }
 
     public void stop() {
@@ -159,11 +247,12 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
             updatePlayerStatus("stopped");
             prefManager.setPlayingFile("filename");
         }
+
+        stopSelf();
     }
 
     public void goToPosition() {
         prefManager = new PrefManager(this);
         mediaPlayer.seekTo(prefManager.getCurrentPosition());
     }
-
 }
