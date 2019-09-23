@@ -68,7 +68,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
     private int id;
 
     DB db;
-    String title, description, artistName, link, artwork;
+    String title, description, artistName, link, feed, artwork;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +82,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         title = intent.getStringExtra("title");
         artistName = intent.getStringExtra("artistName");
         link = intent.getStringExtra("link");
+        feed = intent.getStringExtra("feed");
         description = intent.getStringExtra("description");
 
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
@@ -192,6 +193,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
                     title,
                     description,
                     link,
+                    feed,
                     artwork
             ));
 

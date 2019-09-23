@@ -9,7 +9,7 @@ import br.com.eaglehorn.thundercast.Database.Contract.DBContract;
 public class DBHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "Thundercast.db";
 
     private static final String SQL_CREATE_PODCASTS =
@@ -20,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBContract.Podcasts.COLUMN_DESCRIPTION + " TEXT," +
                     DBContract.Podcasts.COLUMN_ARTIST_NAME + " TEXT," +
                     DBContract.Podcasts.COLUMN_LINK + " TEXT," +
+                    DBContract.Podcasts.COLUMN_FEED + " TEXT," +
                     DBContract.Podcasts.COLUMN_ARTWORK + " TEXT)";
 
     private static final String SQL_CREATE_SUBSCRIPTIONS =

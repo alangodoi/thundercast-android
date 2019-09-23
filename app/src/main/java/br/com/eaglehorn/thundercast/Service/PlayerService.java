@@ -1,18 +1,24 @@
 package br.com.eaglehorn.thundercast.Service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.io.File;
@@ -140,29 +146,44 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                         stopPendingIntent)
                         .build();
 
-//        Notification notification = new Notification.Builder(this, CHANNEL_ID)
-//                .setContentTitle("TITLE")
-//                .setContentText("TEXT")
-//                .setSmallIcon(R.drawable.ic_launcher_foreground)
-//                .setContentIntent(pendingIntent);
-
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.flash)
                 .setContentTitle(prefManager.getPlayingTitle())
-//                .setContentText("Doing some work...")
                 .setContentIntent(pendingIntent)
                 .addAction(resumeAction)
                 .addAction(pauseAction)
                 .addAction(stopAction)
-//                .addAction(R.drawable.ic_play, "Resume",
-//                        resumePendingIntent)
-//                .addAction(R.drawable.ic_pause, "Pause",
-//                        pausePendingIntent)
-//                .addAction(R.drawable.ic_stop, "Stop",
-//                        stopPendingIntent)
                 .build();
 
-        startForeground(1, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startMyOwnForeground();
+
+            String NOTIFICATION_CHANNEL_ID = "br.com.eaglehorn.thundercast";
+            String channelName = "My Background Service";
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            assert manager != null;
+            manager.createNotificationChannel(chan);
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+            Notification notification2 = notificationBuilder.setOngoing(true)
+                    .setSmallIcon(R.drawable.flash)
+                    .setContentTitle(prefManager.getPlayingTitle())
+                    .setContentIntent(pendingIntent)
+                    .addAction(resumeAction)
+                    .addAction(pauseAction)
+                    .addAction(stopAction)
+//                    .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
+//                    .setCategory(Notification.CATEGORY_SERVICE)
+                    .build();
+
+            startForeground(2, notification2);
+        } else {
+            startForeground(1, notification);
+        }
+
     }
 
     @Override
@@ -190,6 +211,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     private void play(String filename, String flag) {
+        Log.d(TAG, "play: ");   
         File file = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS),
                 filename
@@ -217,6 +239,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     public void pause() {
+        Log.d(TAG, "pause: ");
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             updatePlayerStatus("paused");
@@ -239,6 +262,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     public void stop() {
+        Log.d(TAG, "stop: ");
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
@@ -252,5 +276,26 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public void goToPosition() {
         prefManager = new PrefManager(this);
         mediaPlayer.seekTo(prefManager.getCurrentPosition());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startMyOwnForeground(){
+        String NOTIFICATION_CHANNEL_ID = "br.com.eaglehorn.thundercast";
+        String channelName = "My Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.drawable.flash)
+                .setContentTitle("App is running in background")
+                .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+        startForeground(2, notification);
     }
 }

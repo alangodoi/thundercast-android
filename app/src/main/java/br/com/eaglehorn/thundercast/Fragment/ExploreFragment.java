@@ -52,7 +52,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
 
     private int featuredPodcastId = 0;
     private String featuredPodcastTitle, featuredPodcastArtistName, featuredPodcastDescription,
-            featuredPodcastArtwork, featuredPodcastLink, featuredPodcastCopyright;
+            featuredPodcastArtwork, featuredPodcastLink, featuredPodcastFeed, featuredPodcastCopyright;
 
     private TrendingLineAdapter trendingAdapter;
     private List<Podcast> trendinglist;
@@ -129,6 +129,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 featuredPodcastDescription,
                 featuredPodcastArtwork,
                 featuredPodcastLink,
+                featuredPodcastFeed,
                 featuredPodcastCopyright
         ));
 
@@ -181,6 +182,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                 trendinglist.get(position).getDescription(),
                 trendinglist.get(position).getArtwork(),
                 trendinglist.get(position).getLink(),
+                trendinglist.get(position).getFeed(),
                 trendinglist.get(position).getCopyright()
         );
     }
@@ -223,6 +225,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                     featuredPodcastDescription = response.body().get(value).getDescription();
                     featuredPodcastArtwork = response.body().get(value).getArtwork();
                     featuredPodcastLink = response.body().get(value).getLink();
+                    featuredPodcastFeed = response.body().get(value).getFeed();
                     featuredPodcastCopyright = response.body().get(value).getCopyright();
 
                     tvFeaturedTitle.setText(response.body().get(value).getTitle());
@@ -279,7 +282,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         });
     }
 
-    private void podcastDetails(int id, String title, String artistName, String description, String artwork, String link, String copyright) {
+    private void podcastDetails(int id, String title, String artistName, String description, String artwork, String link, String feed, String copyright) {
         Intent intent = new Intent(getActivity(), PodcastDetails.class);
         intent.putExtra("id", id);
         intent.putExtra("title", title);
@@ -287,6 +290,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         intent.putExtra("description", description);
         intent.putExtra("artwork", artwork);
         intent.putExtra("link", link);
+        intent.putExtra("feed", feed);
         intent.putExtra("copyright", copyright);
         startActivity(intent);
     }

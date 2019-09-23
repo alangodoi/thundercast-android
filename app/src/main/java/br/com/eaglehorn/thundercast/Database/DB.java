@@ -36,6 +36,7 @@ public class DB {
         values.put(DBContract.Podcasts.COLUMN_DESCRIPTION, podcast.getDescription());
         values.put(DBContract.Podcasts.COLUMN_ARTIST_NAME, podcast.getArtistName());
         values.put(DBContract.Podcasts.COLUMN_LINK, podcast.getLink());
+        values.put(DBContract.Podcasts.COLUMN_FEED, podcast.getFeed());
         values.put(DBContract.Podcasts.COLUMN_ARTWORK, podcast.getArtwork());
 
 
@@ -90,7 +91,7 @@ public class DB {
         List<Podcast> list = new ArrayList<>();
 
         String[] columns = new String[]
-                {"_id", "eid", "title", "artistName", "description", "link", "artwork"};
+                {"_id", "eid", "title", "artistName", "description", "link", "feed", "artwork"};
 
         Cursor cursor = db.query(
                 "Podcasts",
@@ -113,7 +114,8 @@ public class DB {
                 podcast.setArtistName(cursor.getString(3));
                 podcast.setDescription(cursor.getString(4));
                 podcast.setLink(cursor.getString(5));
-                podcast.setArtwork(cursor.getString(6));
+                podcast.setFeed(cursor.getString(6));
+                podcast.setArtwork(cursor.getString(7));
 
                 list.add(podcast);
             } while (cursor.moveToNext());

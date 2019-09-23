@@ -50,6 +50,16 @@ public class Podcast {
         this.updatedAt = updatedAt;
     }
 
+    public Podcast(Integer id, String artistName, String title, String description, String link, String feed, String artwork) {
+        this.id = id;
+        this.artistName = artistName;
+        this.title = title;
+        this.description = description;
+        this.link = link;
+        this.feed = feed;
+        this.artwork = artwork;
+    }
+
     public Podcast(Integer id, String artistName, String title, String description, String link, String artwork) {
         this.id = id;
         this.artistName = artistName;

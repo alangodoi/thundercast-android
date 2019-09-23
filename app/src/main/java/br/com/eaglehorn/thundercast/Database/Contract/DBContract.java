@@ -16,6 +16,7 @@ public class DBContract {
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_ARTIST_NAME = "artistName";
         public static final String COLUMN_LINK = "link";
+        public static final String COLUMN_FEED = "feed";
         public static final String COLUMN_ARTWORK = "artwork";
     }
 

@@ -145,6 +145,7 @@ public class PodcastsFragment extends Fragment implements SubscriptionLineHolder
         intent.putExtra("description", subscriptionlist.get(position).getDescription());
         intent.putExtra("artwork", subscriptionlist.get(position).getArtwork());
         intent.putExtra("link", subscriptionlist.get(position).getLink());
+        intent.putExtra("feed", subscriptionlist.get(position).getFeed());
         intent.putExtra("copyright", subscriptionlist.get(position).getCopyright());
         startActivity(intent);
     }

@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ImageView;
 
 
 import com.google.android.gms.ads.AdListener;
@@ -20,13 +22,18 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
+import br.com.eaglehorn.thundercast.Helper.Helper;
+import br.com.eaglehorn.thundercast.Helper.OPMLHelper;
 import br.com.eaglehorn.thundercast.R;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
+
+    @BindView(R.id.ivSettings) ImageView ivSettings;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -156,12 +163,18 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.btnAds)
     void click() {
-            Log.d(TAG, "onClick: Supporting");
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-            } else {
-                Log.d(TAG, "The interstitial wasn't loaded yet.");
-            }
+        Log.d(TAG, "onClick: Supporting");
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d(TAG, "The interstitial wasn't loaded yet.");
+        }
+    }
+
+    @OnClick(R.id.ivSettings)
+    void settings() {
+        OPMLHelper opmlHelper = new OPMLHelper(getActivity());
+        opmlHelper.generate().export();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
