@@ -22,9 +22,36 @@
     <!-- Ads -->
     <string name="ads_app_id">ca-app-pub-2569633166081758~7965688576</string>
     <string name="ads_native_id">ca-app-pub-2569633166081758/5944183983</string>
-    
+
+    <!-- Settings -->
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="general_header">General</string>
+    <string name="notifications_header">Notifications</string>
+    <string name="appearance_header">Appearance</string>
+    <string name="opml_header">Import &amp; Export OPML</string>
+    <string name="about_header">About</string>
+
+    <!-- General Preferences -->
+
+    <!-- Notifications Preferences -->
+    <string name="notification_episodes_notify">Notify me</string>
+    <string name="notification_playback_hide_on_pause">Hide playback notification on pause</string>
+
+    <!-- Appearance Preferences -->
+    <string name="appearance_theme_title">Select theme</string>
+    <string name="appearance_theme_description">Select a theme that make you feel comfortable.</string>
+    <string name="appearance_appicon_title">Select app icon</string>
+    <string name="appearance_appicon_description">Feel free to change our app icon.</string>
+
+    <!-- OPML Preferences -->
+    <string name="opml_import_title">Select file</string>
+    <string name="opml_import_description">Import podcast subscriptions from an OPML file.</string>
+    <string name="opml_export_downloads_title">Save file</string>
+    <string name="opml_export_downloads_description">Export the OPML file to your storage.</string>
+
+    <!-- About Preferences -->
 
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

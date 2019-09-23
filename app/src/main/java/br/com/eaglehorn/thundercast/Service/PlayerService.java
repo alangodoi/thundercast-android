@@ -211,7 +211,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     private void play(String filename, String flag) {
-        Log.d(TAG, "play: ");   
+        Log.d(TAG, "play: ");
         File file = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS),
                 filename

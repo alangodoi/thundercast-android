@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright 2018 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:fragment="br.com.eaglehorn.thundercast.Activity.SettingsActivity$GeneralFragment"
+        app:icon="@drawable/ic_settings"
+        app:key="general_header"
+        app:title="@string/general_header"
+        app:enabled="false"/>
+
+    <Preference
+        app:fragment="br.com.eaglehorn.thundercast.Activity.SettingsActivity$NotificationsFragment"
+        app:icon="@drawable/ic_notifications"
+        app:key="notifications_header"
+        app:title="@string/notifications_header"
+        app:enabled="true"/>
+
+    <Preference
+        app:fragment="br.com.eaglehorn.thundercast.Activity.SettingsActivity$AppearanceFragment"
+        app:icon="@drawable/ic_color_palette"
+        app:key="appearance_header"
+        app:title="@string/appearance_header"
+        app:enabled="true"/>
+
+    <Preference
+        app:fragment="br.com.eaglehorn.thundercast.Activity.SettingsActivity$OpmlFragment"
+        app:icon="@drawable/ic_import_export"
+        app:key="opml_header"
+        app:title="@string/opml_header"
+        app:enabled="true"/>
+
+    <Preference
+        app:fragment="br.com.eaglehorn.thundercast.Activity.SettingsActivity$HelpFragment"
+        app:icon="@drawable/ic_help"
+        app:key="about_header"
+        app:title="@string/about_header"
+        app:enabled="false"/>
+
+</PreferenceScreen>

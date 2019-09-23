@@ -1,6 +1,7 @@
 package br.com.eaglehorn.thundercast.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -22,6 +23,8 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
+import br.com.eaglehorn.thundercast.Activity.MainActivity;
+import br.com.eaglehorn.thundercast.Activity.SettingsActivity;
 import br.com.eaglehorn.thundercast.Helper.Helper;
 import br.com.eaglehorn.thundercast.Helper.OPMLHelper;
 import br.com.eaglehorn.thundercast.R;
@@ -143,21 +146,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-//        btnAds = rootView.findViewById(R.id.btnAds);
-
-//        btnAds.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.d(TAG, "onClick: Supporting");
-//                if (mInterstitialAd.isLoaded()) {
-//                    mInterstitialAd.show();
-//                } else {
-//                    Log.d(TAG, "The interstitial wasn't loaded yet.");
-//                }
-//            }
-//        });
-
-
         return rootView;
     }
 
@@ -173,8 +161,7 @@ public class ProfileFragment extends Fragment {
 
     @OnClick(R.id.ivSettings)
     void settings() {
-        OPMLHelper opmlHelper = new OPMLHelper(getActivity());
-        opmlHelper.generate().export();
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
 
     // TODO: Rename method, update argument and hook method into UI event

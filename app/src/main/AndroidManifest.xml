@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,24 +19,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Activity.MainActivity"></activity>
         <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
         <!-- AdMob Account: ca-app-pub-2569633166081758~7965688576 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
-<!--        ca-app-pub-3940256099942544~3347511713-->
-        <service android:name="br.com.eaglehorn.thundercast.Service.PlayerService"
+            android:value="ca-app-pub-3940256099942544~3347511713" /> <!-- ca-app-pub-3940256099942544~3347511713 -->
+        <service
+            android:name=".Service.PlayerService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <receiver android:name=".BroadcastReceiver.NotificationReceiver" />
 
         <activity
-            android:name="br.com.eaglehorn.thundercast.Activity.MainActivity"
+            android:name=".Activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="br.com.eaglehorn.thundercast.Activity.SplashScreen"
+            android:name=".Activity.SplashScreen"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,8 +48,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="br.com.eaglehorn.thundercast.Activity.PodcastDetails" />
-        <activity android:name="br.com.eaglehorn.thundercast.Activity.EpisodeDetailsActivity" />
+        <activity android:name=".Activity.PodcastDetails" />
+        <activity android:name=".Activity.EpisodeDetailsActivity" />
     </application>
 
 </manifest>
