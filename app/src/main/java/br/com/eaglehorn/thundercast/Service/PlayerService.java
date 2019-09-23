@@ -116,32 +116,29 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         PendingIntent stopPendingIntent =
                 PendingIntent.getBroadcast(this, 0, stopIntent, 0);
 
-
         // Action to play podcast
-//        NotificationCompat.Action playAction =
-//                new NotificationCompat.Action.Builder(
-//                        R.drawable.ic_play,
-//                        "Play",
-//                        pendingIntent)
-//                        .build();
+        NotificationCompat.Action resumeAction =
+                new NotificationCompat.Action.Builder(
+                        R.drawable.ic_play,
+                        "Resume",
+                        resumePendingIntent)
+                        .build();
 
         // Action to pause podcast
-//        NotificationCompat.Action pauseAction =
-//                new NotificationCompat.Action.Builder(
-//                        R.drawable.ic_pause,
-//                        "Pause",
-//                        pendingIntent)
-//                        .build();
+        NotificationCompat.Action pauseAction =
+                new NotificationCompat.Action.Builder(
+                        R.drawable.ic_pause,
+                        "Pause",
+                        pausePendingIntent)
+                        .build();
 
         // Action to stop podcast
-//        NotificationCompat.Action stopAction =
-//                new NotificationCompat.Action.Builder(
-//                        R.drawable.ic_stop,
-//                        "Stop",
-//                        stopService)
-//                        .build();
-
-
+        NotificationCompat.Action stopAction =
+                new NotificationCompat.Action.Builder(
+                        R.drawable.ic_stop,
+                        "Stop",
+                        stopPendingIntent)
+                        .build();
 
 //        Notification notification = new Notification.Builder(this, CHANNEL_ID)
 //                .setContentTitle("TITLE")
@@ -154,15 +151,15 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                 .setContentTitle(prefManager.getPlayingTitle())
 //                .setContentText("Doing some work...")
                 .setContentIntent(pendingIntent)
-//                .addAction(playAction)
-//                .addAction(pauseAction)
-//                .addAction(stopAction)
-                .addAction(R.drawable.ic_play, "Resume",
-                        resumePendingIntent)
-                .addAction(R.drawable.ic_pause, "Pause",
-                        pausePendingIntent)
-                .addAction(R.drawable.ic_stop, "Stop",
-                        stopPendingIntent)
+                .addAction(resumeAction)
+                .addAction(pauseAction)
+                .addAction(stopAction)
+//                .addAction(R.drawable.ic_play, "Resume",
+//                        resumePendingIntent)
+//                .addAction(R.drawable.ic_pause, "Pause",
+//                        pausePendingIntent)
+//                .addAction(R.drawable.ic_stop, "Stop",
+//                        stopPendingIntent)
                 .build();
 
         startForeground(1, notification);
@@ -179,7 +176,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public void onPrepared(MediaPlayer mp) {
         Toast.makeText(this, "Player Prepared", Toast.LENGTH_LONG).show();
         mp.start();
-        updatePlayerStatus("playing");
+//        updatePlayerStatus("playing");
     }
 
     public void updatePlayerStatus(String status) {
@@ -207,6 +204,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
 
             prefManager = new PrefManager(this);
             prefManager.setPlayingFile(filename);
+            updatePlayerStatus("playing");
             if (flag.equals("new")) {
                 prefManager.setCurrentPosition(0);
             } else if (flag.equals("resume")) {
