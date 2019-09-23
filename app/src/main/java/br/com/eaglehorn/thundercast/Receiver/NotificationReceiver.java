@@ -1,10 +1,8 @@
-package br.com.eaglehorn.thundercast.BroadcastReceiver;
+package br.com.eaglehorn.thundercast.Receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
 
 import br.com.eaglehorn.thundercast.Service.PlayerService;
 

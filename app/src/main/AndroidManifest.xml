@@ -19,10 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".Activity.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".Activity.MainActivity"/>
+
         <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
         <!-- AdMob Account: ca-app-pub-2569633166081758~7965688576 -->
         <meta-data
@@ -31,10 +28,19 @@
         <service
             android:name=".Service.PlayerService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
-        <receiver android:name=".BroadcastReceiver.NotificationReceiver" />
+        <service
+            android:name=".Service.DownloadService"
+            android:enabled="true"
+            android:exported="false"></service>
 
+        <receiver android:name=".Receiver.NotificationReceiver" />
+
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Activity.MainActivity" />
         <activity
             android:name=".Activity.MainActivity"
             android:label="@string/title_activity_main"

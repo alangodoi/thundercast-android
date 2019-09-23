@@ -1,5 +1,9 @@
 # thundercast-android
 
+##### V1.6
+Layout básico da tela de preferências
+Exportação via arquivo OPML movido para a tela de preferências
+
 ##### V1.5
 Notificação para possibilitar que o podcast continue executando enquanto o app está fechado
 Possibilidade de exportar as inscrições via arquivo OPML

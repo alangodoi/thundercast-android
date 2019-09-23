@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -25,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import br.com.eaglehorn.thundercast.Activity.MainActivity;
-import br.com.eaglehorn.thundercast.BroadcastReceiver.NotificationReceiver;
+import br.com.eaglehorn.thundercast.Receiver.NotificationReceiver;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
 

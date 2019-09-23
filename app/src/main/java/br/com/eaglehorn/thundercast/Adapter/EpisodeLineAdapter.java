@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import br.com.eaglehorn.thundercast.Adapter.ViewHolder.EpisodeLineHolder;
 import br.com.eaglehorn.thundercast.Helper.Helper;
@@ -24,12 +26,15 @@ import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
+import br.com.eaglehorn.thundercast.Receiver.DownloadReceiver;
+import br.com.eaglehorn.thundercast.Service.DownloadService;
 import br.com.eaglehorn.thundercast.Service.PlayerService;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static br.com.eaglehorn.thundercast.Service.DownloadService.ACTION_START_DOWNLOAD;
 import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_PAUSE;
 import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_PLAY;
 import static br.com.eaglehorn.thundercast.Service.PlayerService.ACTION_RESUME;
@@ -217,31 +222,50 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                     Log.d(TAG, "Download or Play: Download");
                     apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
-                    Call<ResponseBody> call = apiInterface.download(episodes.getAudioFile());
+//                    Intent intent = new Intent(mContext, DownloadService.class);
+//                    intent.putExtra("url", episodes.getAudioFile());
+//                    intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+//                    startService(intent);
+//                    mContext.startService(intent);
 
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            if (response.isSuccessful()){
-                                Log.d(TAG, "Downloaded: " + response.body());
+                    Intent downloadIntent = new Intent(mContext, DownloadService.class);
 
-                                if (helper.saveFileToDisk(mContext, fileName, response.body())) {
-                                    Log.d(TAG, "onResponse: Saved");
-                                    if (prefManager.getActivityDetailsRunning()) {
-                                        Glide.with(mContext).load(R.drawable.ic_play)
-                                                .into(holder.ivEpisodeFile);
-                                    }
-                                } else {
-                                    Log.d(TAG, "onResponse: Not Saved");
-                                }
-                            }
-                        }
+//                    Executors.newSingleThreadExecutor().submit(() -> {
+                        // You can perform your task here.
+                        Log.d(TAG, "onClick: ");
 
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Log.d(TAG, "onFailure: " + t.toString());
-                        }
-                    });
+                        downloadIntent.setAction(ACTION_START_DOWNLOAD);
+                        downloadIntent.putExtra("url", episodes.getAudioFile());
+                        downloadIntent.putExtra("receiver", new DownloadReceiver(new Handler()));
+                        downloadIntent.putExtra("filename", fileName);
+                        mContext.startService(downloadIntent);
+//                    });
+
+//                    Call<ResponseBody> call = apiInterface.download(episodes.getAudioFile());
+//
+//                    call.enqueue(new Callback<ResponseBody>() {
+//                        @Override
+//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                            if (response.isSuccessful()){
+//                                Log.d(TAG, "Downloaded: " + response.body());
+//
+//                                if (helper.saveFileToDisk(mContext, fileName, response.body())) {
+//                                    Log.d(TAG, "onResponse: Saved");
+//                                    if (prefManager.getActivityDetailsRunning()) {
+//                                        Glide.with(mContext).load(R.drawable.ic_play)
+//                                                .into(holder.ivEpisodeFile);
+//                                    }
+//                                } else {
+//                                    Log.d(TAG, "onResponse: Not Saved");
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                            Log.d(TAG, "onFailure: " + t.toString());
+//                        }
+//                    });
                 }
             }
         });
