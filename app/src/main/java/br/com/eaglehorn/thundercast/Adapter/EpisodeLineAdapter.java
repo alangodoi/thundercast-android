@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
@@ -59,9 +60,6 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     private ApiInterface apiInterface;
     PrefManager prefManager;
 
-    DownloadReceiver downloadReceiver;
-    TestService mySvc;
-
     public EpisodeLineAdapter(Context mContext, List<Episode> episodesList, EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         this.mContext = mContext;
         this.episodesList = episodesList;
@@ -73,6 +71,8 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     public EpisodeLineHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.rv_episodes, viewGroup, false);
 
+        Log.d(TAG, "ALAN - onCreateViewHolder: ");
+
         return new EpisodeLineHolder(view, onEpisodeClickListener);
     }
 
@@ -82,19 +82,108 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
 //        }
 //    }
 
-//    private DownloadReceiver downloadReceiver2 = new DownloadReceiver(new Handler()) {
+//    private DownloadReceiver downloadReceiver = new DownloadReceiver(new Handler()) {
 //        @Override
 //        protected void onReceiveResult(int resultCode, Bundle resultData) {
 //            super.onReceiveResult(resultCode, resultData);
-//            Log.d(TAG, "TWO + onReceiveResult: " + resultData.getInt("progress"));
+////            Log.d(TAG, "TWO + onReceiveResult: " + resultData.getInt("progress"));
+//        }
+//    };
+
+//    private ResultReceiver myRR = new ResultReceiver(new Handler()) {
+//        @Override
+//        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//            super.onReceiveResult(resultCode, resultData);
+////            Log.d(TAG, "Receiving Results: ");
+//
+//            // Re-enable the clicking of the heartImageView for that specific row in RecyclerView
+//            RecyclerView.ViewHolder holder =
+//                    .findViewHolderForAdapterPosition(1);
+//
+//            if (resultCode == DownloadService.UPDATE_PROGRESS) {
+//
+//                int progress = resultData.getInt("progress"); //get the progress
+//
+//
+//
+//                new Handler(Looper.getMainLooper()).post(() -> {
+////                            holder.downloadStatus.setText("Downloading...");
+////                            holder.progressBar.setProgress(progress);
+//
+//                });
+//
+////                Log.d(TAG, "onReceiveResult - Adapter: " + progress);
+//
+//
+//                if (progress == 100) {
+//
+//                    new Handler(Looper.getMainLooper()).post(() -> {
+//
+////                        holder.downloadStatus.setText("Downloaded");
+////                        holder.progressBar.setProgress(progress);
+//
+////                        Glide.with(mContext)
+////                            .load(R.drawable.ic_play)
+////                            .into(holder.ivEpisodeFile);
+////
+////                        holder.clDownload.setVisibility(View.GONE);
+////                        mContext.stopService(downloadIntent);
+//                    });
+//
+//                }
+//            }
 //        }
 //    };
 
     @Override
     public void onBindViewHolder(final EpisodeLineHolder holder, final int position) {
+        Log.d(TAG, "ALAN - onBindViewHolder: ");
+
         final Episode episodes = episodesList.get(position);
         helper = new Helper();
         prefManager = new PrefManager(mContext);
+
+        ResultReceiver myRR = new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+//            Log.d(TAG, "Receiving Results: ");
+
+                // Re-enable the clicking of the heartImageView for that specific row in RecyclerView
+
+                if (resultCode == DownloadService.UPDATE_PROGRESS) {
+
+                    int progress = resultData.getInt("progress"); //get the progress
+
+                    Log.d(TAG, "onReceiveResult - ALAN: " + progress);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                            holder.downloadStatus.setText("Downloading...");
+                            holder.progressBar.setProgress(progress);
+
+                    });
+
+//                Log.d(TAG, "onReceiveResult - Adapter: " + progress);
+
+
+                    if (progress == 100) {
+
+                        new Handler(Looper.getMainLooper()).post(() -> {
+
+                        holder.downloadStatus.setText("Downloaded");
+                        holder.progressBar.setProgress(progress);
+
+                        Glide.with(mContext)
+                            .load(R.drawable.ic_play)
+                            .into(holder.ivEpisodeFile);
+
+                        holder.clDownload.setVisibility(View.GONE);
+//                        mContext.stopService(downloadIntent);
+                        });
+
+                    }
+                }
+            }
+        };
 
 //        Intent intent = new Intent(mContext, DownloadService.class);
 //        intent.putExtra("receiver2", downloadReceiver2);
@@ -203,11 +292,11 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
             }
         }
 
-        if (prefManager.isDownloading() &&
-                prefManager.getDownloadingFile().equals(episodes.getAudioFile())) {
-            Log.d(TAG, "onBindViewHolder: Show Progress");
-            holder.clDownload.setVisibility(View.VISIBLE);
-        }
+//        if (prefManager.isDownloading() &&
+//                prefManager.getDownloadingFile().equals(episodes.getAudioFile())) {
+//            Log.d(TAG, "onBindViewHolder: Show Progress");
+//            holder.clDownload.setVisibility(View.VISIBLE);
+//        }
 
         holder.ivEpisodeFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,45 +405,47 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
 
                     Intent downloadIntent = new Intent(mContext, TestService.class);
                     downloadIntent.setAction(ACTION_START_DOWNLOAD);
-                    downloadIntent.putExtra("receiver", new DownloadReceiver(new Handler()));
+//                    downloadIntent.putExtra("receiver", new DownloadReceiver(new Handler()));
+//                    downloadIntent.putExtra("receiver", dr);
+                    downloadIntent.putExtra("receiver", myRR);
                     downloadIntent.putExtra("url", episodes.getAudioFile());
                     downloadIntent.putExtra("filename", fileName);
-                    downloadIntent.putExtra("extra_receiver", new ResultReceiver(null) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            super.onReceiveResult(resultCode, resultData);
-                            if (resultCode == DownloadService.UPDATE_PROGRESS) {
-
-                                int progress = resultData.getInt("progress"); //get the progress
-
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                            holder.downloadStatus.setText("Downloading...");
-                                            holder.progressBar.setProgress(progress);
-                                });
-
-//                                Log.d(TAG, "onReceiveResult - Adapter: " + progress);
-
-                                if (progress == 100) {
-//                                    Log.d(TAG, "onReceiveResult - Adapter: 100%");
-
-                                    new Handler(Looper.getMainLooper()).post(() -> {
-
-                                        holder.downloadStatus.setText("Downloaded");
-                                        holder.progressBar.setProgress(progress);
-
-                                        Glide.with(mContext)
-                                            .load(R.drawable.ic_play)
-                                            .into(holder.ivEpisodeFile);
-
-                                        holder.clDownload.setVisibility(View.GONE);
-                                        mContext.stopService(downloadIntent);
-                                    });
-
-                                }
-                            }
-
-                        }
-                    });
+//                    downloadIntent.putExtra("extra_receiver", new ResultReceiver(null) {
+//                        @Override
+//                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//                            super.onReceiveResult(resultCode, resultData);
+//                            if (resultCode == DownloadService.UPDATE_PROGRESS) {
+//
+//                                int progress = resultData.getInt("progress"); //get the progress
+//
+//                                new Handler(Looper.getMainLooper()).post(() -> {
+//                                            holder.downloadStatus.setText("Downloading...");
+//                                            holder.progressBar.setProgress(progress);
+//                                });
+//
+////                                Log.d(TAG, "onReceiveResult - Adapter: " + progress);
+//
+//                                if (progress == 100) {
+////                                    Log.d(TAG, "onReceiveResult - Adapter: 100%");
+//
+//                                    new Handler(Looper.getMainLooper()).post(() -> {
+//
+//                                        holder.downloadStatus.setText("Downloaded");
+//                                        holder.progressBar.setProgress(progress);
+//
+//                                        Glide.with(mContext)
+//                                            .load(R.drawable.ic_play)
+//                                            .into(holder.ivEpisodeFile);
+//
+//                                        holder.clDownload.setVisibility(View.GONE);
+//                                        mContext.stopService(downloadIntent);
+//                                    });
+//
+//                                }
+//                            }
+//
+//                        }
+//                    });
                     mContext.startService(downloadIntent);
 
                 }

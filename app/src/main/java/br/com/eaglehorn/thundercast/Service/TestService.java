@@ -117,8 +117,8 @@ public class TestService extends IntentService {
 
         String action = intent.getAction();
         receiver = intent.getParcelableExtra("receiver");
-        extra_receiver = intent.getParcelableExtra("extra_receiver");
-        dowrec = intent.getParcelableExtra("receiver2");
+//        extra_receiver = intent.getParcelableExtra("extra_receiver");
+//        dowrec = intent.getParcelableExtra("receiver2");
 
         if (action.equals(ACTION_START_DOWNLOAD)) {
             String url = intent.getStringExtra("url");
@@ -173,9 +173,9 @@ public class TestService extends IntentService {
                     updateNotification(progress);
                     resultData.putInt("progress" , progress);
                     receiver.send(UPDATE_PROGRESS, resultData);
-                    extra_receiver.send(UPDATE_PROGRESS, resultData);
-                    if (dowrec != null)
-                    dowrec.send(UPDATE_PROGRESS, resultData);
+//                    extra_receiver.send(UPDATE_PROGRESS, resultData);
+//                    if (dowrec != null)
+//                    dowrec.send(UPDATE_PROGRESS, resultData);
                     output.write(data, 0, count);
                 }
 
