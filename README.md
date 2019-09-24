@@ -1,4 +1,12 @@
-# thundercast-android
+# Thundercast
+
+##### V1.8
+A notificação mostra o progresso do download
+O progresso do download é mostrado na linha do episódio
+
+
+##### V1.7
+Agora o download é executado em background, possibilitando que os usuários continuem navegando no app
 
 ##### V1.6
 Layout básico da tela de preferências

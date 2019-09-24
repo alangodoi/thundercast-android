@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -11,6 +13,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,6 +42,8 @@ import br.com.eaglehorn.thundercast.Network.ApiClient;
 import br.com.eaglehorn.thundercast.Network.ApiInterface;
 import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
+import br.com.eaglehorn.thundercast.Receiver.DownloadReceiver;
+import br.com.eaglehorn.thundercast.Service.DownloadService;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -91,7 +98,7 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
 
         episodelist = new ArrayList<>();
 
-        episodeAdapter = new EpisodeLineAdapter(this, episodelist, this);
+        episodeAdapter = new EpisodeLineAdapter(getApplicationContext(), episodelist, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
@@ -128,7 +135,19 @@ public class PodcastDetails extends AppCompatActivity implements EpisodeLineHold
         }
 
         getEpisodes(id);
+
+//        Intent intent2 = new Intent(getApplicationContext(), DownloadService.class);
+//        intent2.putExtra("receiver2", downloadReceiver2);
+
     }
+
+//    private DownloadReceiver downloadReceiver2 = new DownloadReceiver(new Handler()) {
+//        @Override
+//        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//            super.onReceiveResult(resultCode, resultData);
+//            Log.d(TAG, "TWO + onReceiveResult: " + resultData.getInt("progress"));
+//        }
+//    };
 
     @Override
     protected void onResume() {

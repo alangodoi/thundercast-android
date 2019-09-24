@@ -1,9 +1,11 @@
 package br.com.eaglehorn.thundercast.Adapter.ViewHolder;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import br.com.eaglehorn.thundercast.R;
@@ -18,6 +20,9 @@ public class EpisodeLineHolder extends RecyclerView.ViewHolder implements View.O
     @BindView(R.id.tvEpisodeReleaseDate) public TextView epReleaseDate;
     @BindView(R.id.tvEpisodeLength) public TextView epLength;
     @BindView(R.id.ivEpisodeFile) public ImageView ivEpisodeFile;
+    @BindView(R.id.clDownload) public ConstraintLayout clDownload;
+    @BindView(R.id.tvDownloadStatus) public TextView downloadStatus;
+    @BindView(R.id.progressBar) public ProgressBar progressBar;
 
     public EpisodeLineHolder(@NonNull View itemView, final EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         super(itemView);

@@ -22,13 +22,11 @@ public class DownloadReceiver extends ResultReceiver {
         if (resultCode == DownloadService.UPDATE_PROGRESS) {
 
             int progress = resultData.getInt("progress"); //get the progress
-//            dialog.setProgress(progress);
 
-            Log.d(TAG, "onReceiveResult: " + progress);
+//            Log.d(TAG, "DownloadReceiver - onReceiveResult: " + progress);
 
             if (progress == 100) {
-//                dialog.dismiss();
-                Log.d(TAG, "onReceiveResult: 100%");
+//                Log.d(TAG, "onReceiveResult: 100%");
 
             }
         }

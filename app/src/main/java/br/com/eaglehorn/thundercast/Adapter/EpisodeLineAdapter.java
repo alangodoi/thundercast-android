@@ -8,17 +8,24 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import br.com.eaglehorn.thundercast.Activity.MainActivity;
 import br.com.eaglehorn.thundercast.Adapter.ViewHolder.EpisodeLineHolder;
 import br.com.eaglehorn.thundercast.Helper.Helper;
 import br.com.eaglehorn.thundercast.Model.Episode;
@@ -29,6 +36,7 @@ import br.com.eaglehorn.thundercast.R;
 import br.com.eaglehorn.thundercast.Receiver.DownloadReceiver;
 import br.com.eaglehorn.thundercast.Service.DownloadService;
 import br.com.eaglehorn.thundercast.Service.PlayerService;
+import br.com.eaglehorn.thundercast.Service.TestService;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +59,9 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     private ApiInterface apiInterface;
     PrefManager prefManager;
 
+    DownloadReceiver downloadReceiver;
+    TestService mySvc;
+
     public EpisodeLineAdapter(Context mContext, List<Episode> episodesList, EpisodeLineHolder.OnEpisodeClickListener onEpisodeClickListener) {
         this.mContext = mContext;
         this.episodesList = episodesList;
@@ -61,14 +72,82 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
     @Override
     public EpisodeLineHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.rv_episodes, viewGroup, false);
+
         return new EpisodeLineHolder(view, onEpisodeClickListener);
     }
+
+//    private static class MyVeryOwnHandler extends Handler {
+//        public void handleMessage(Message msg) {
+//            // do cool stuff
+//        }
+//    }
+
+//    private DownloadReceiver downloadReceiver2 = new DownloadReceiver(new Handler()) {
+//        @Override
+//        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//            super.onReceiveResult(resultCode, resultData);
+//            Log.d(TAG, "TWO + onReceiveResult: " + resultData.getInt("progress"));
+//        }
+//    };
 
     @Override
     public void onBindViewHolder(final EpisodeLineHolder holder, final int position) {
         final Episode episodes = episodesList.get(position);
         helper = new Helper();
         prefManager = new PrefManager(mContext);
+
+//        Intent intent = new Intent(mContext, DownloadService.class);
+//        intent.putExtra("receiver2", downloadReceiver2);
+
+//        downloadReceiver2 = new DownloadReceiver(null);
+
+//        downloadReceiver = new DownloadReceiver(null) {
+//
+//            @Override
+//            protected void onReceiveResult(int resultCode, Bundle resultData) {
+//                super.onReceiveResult(resultCode, resultData);
+//                Log.d(TAG, "onReceiveResult: " + resultData.getInt("progress"));
+//            }
+//        };
+
+//            Intent dowint = new Intent(mContext, TestService.class);
+//            dowint.putExtra("downrec", new ResultReceiver(null) {
+//
+//                @Override
+//                protected void onReceiveResult(int resultCode, Bundle resultData) {
+//                    super.onReceiveResult(resultCode, resultData);
+//                    if (resultCode == DownloadService.UPDATE_PROGRESS) {
+//
+//                        int progress = resultData.getInt("progress"); //get the progress
+//
+//                        new Handler(Looper.getMainLooper()).post(() -> {
+//                            holder.downloadStatus.setText("Downloading...");
+//                            holder.progressBar.setProgress(progress);
+//                        });
+//
+//                        Log.d(TAG, "onReceiveResult - ALAN: " + progress);
+//
+//                        if (progress == 100) {
+//                            Log.d(TAG, "onReceiveResult - ALAN: 100%");
+//
+//                            new Handler(Looper.getMainLooper()).post(() -> {
+//
+//                                holder.downloadStatus.setText("Downloaded");
+//                                holder.progressBar.setProgress(progress);
+//
+//                                Glide.with(mContext)
+//                                        .load(R.drawable.ic_play)
+//                                        .into(holder.ivEpisodeFile);
+//
+//                                holder.clDownload.setVisibility(View.INVISIBLE);
+//                            });
+//
+//                        }
+//                    }
+//
+//                }
+//            });
+
 
         String[] wordCounter = episodes.getTitle().split(" ");
         if (wordCounter.length > 13) {
@@ -122,6 +201,12 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                 Glide.with(mContext).load(R.drawable.ic_play)
                         .into(holder.ivEpisodeFile);
             }
+        }
+
+        if (prefManager.isDownloading() &&
+                prefManager.getDownloadingFile().equals(episodes.getAudioFile())) {
+            Log.d(TAG, "onBindViewHolder: Show Progress");
+            holder.clDownload.setVisibility(View.VISIBLE);
         }
 
         holder.ivEpisodeFile.setOnClickListener(new View.OnClickListener() {
@@ -222,50 +307,56 @@ public class EpisodeLineAdapter extends RecyclerView.Adapter<EpisodeLineHolder> 
                     Log.d(TAG, "Download or Play: Download");
                     apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
-//                    Intent intent = new Intent(mContext, DownloadService.class);
-//                    intent.putExtra("url", episodes.getAudioFile());
-//                    intent.putExtra("receiver", new DownloadReceiver(new Handler()));
-//                    startService(intent);
-//                    mContext.startService(intent);
+//                    Intent downloadIntent = new Intent(mContext, DownloadService.class);
 
-                    Intent downloadIntent = new Intent(mContext, DownloadService.class);
+                    Log.d(TAG, "onClick: ");
 
-//                    Executors.newSingleThreadExecutor().submit(() -> {
-                        // You can perform your task here.
-                        Log.d(TAG, "onClick: ");
+                    holder.clDownload.setVisibility(View.VISIBLE);
+                    holder.downloadStatus.setText("Queued for download");
 
-                        downloadIntent.setAction(ACTION_START_DOWNLOAD);
-                        downloadIntent.putExtra("url", episodes.getAudioFile());
-                        downloadIntent.putExtra("receiver", new DownloadReceiver(new Handler()));
-                        downloadIntent.putExtra("filename", fileName);
-                        mContext.startService(downloadIntent);
-//                    });
+                    Intent downloadIntent = new Intent(mContext, TestService.class);
+                    downloadIntent.setAction(ACTION_START_DOWNLOAD);
+                    downloadIntent.putExtra("receiver", new DownloadReceiver(new Handler()));
+                    downloadIntent.putExtra("url", episodes.getAudioFile());
+                    downloadIntent.putExtra("filename", fileName);
+                    downloadIntent.putExtra("extra_receiver", new ResultReceiver(null) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+                            if (resultCode == DownloadService.UPDATE_PROGRESS) {
 
-//                    Call<ResponseBody> call = apiInterface.download(episodes.getAudioFile());
-//
-//                    call.enqueue(new Callback<ResponseBody>() {
-//                        @Override
-//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                            if (response.isSuccessful()){
-//                                Log.d(TAG, "Downloaded: " + response.body());
-//
-//                                if (helper.saveFileToDisk(mContext, fileName, response.body())) {
-//                                    Log.d(TAG, "onResponse: Saved");
-//                                    if (prefManager.getActivityDetailsRunning()) {
-//                                        Glide.with(mContext).load(R.drawable.ic_play)
-//                                                .into(holder.ivEpisodeFile);
-//                                    }
-//                                } else {
-//                                    Log.d(TAG, "onResponse: Not Saved");
-//                                }
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                            Log.d(TAG, "onFailure: " + t.toString());
-//                        }
-//                    });
+                                int progress = resultData.getInt("progress"); //get the progress
+
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                            holder.downloadStatus.setText("Downloading...");
+                                            holder.progressBar.setProgress(progress);
+                                });
+
+//                                Log.d(TAG, "onReceiveResult - Adapter: " + progress);
+
+                                if (progress == 100) {
+//                                    Log.d(TAG, "onReceiveResult - Adapter: 100%");
+
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+
+                                        holder.downloadStatus.setText("Downloaded");
+                                        holder.progressBar.setProgress(progress);
+
+                                        Glide.with(mContext)
+                                            .load(R.drawable.ic_play)
+                                            .into(holder.ivEpisodeFile);
+
+                                        holder.clDownload.setVisibility(View.GONE);
+                                        mContext.stopService(downloadIntent);
+                                    });
+
+                                }
+                            }
+
+                        }
+                    });
+                    mContext.startService(downloadIntent);
+
                 }
             }
         });

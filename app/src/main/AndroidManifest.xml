@@ -34,6 +34,8 @@
             android:name=".Service.DownloadService"
             android:enabled="true"
             android:exported="false"></service>
+        <service android:name=".Service.TestService"
+            android:enabled="true"/>
 
         <receiver android:name=".Receiver.NotificationReceiver" />
 

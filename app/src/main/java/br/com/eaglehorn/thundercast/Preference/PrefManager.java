@@ -20,6 +20,8 @@ public class PrefManager {
     private static final String TITLE_PLAYING = "playingTitle";
     private static final String ACTIVITY_DETAILS = "activityDetails";
     private static final String TRACK_POSITION = "trackCurrentPosition";
+    private static final String DOWNLOADING = "downloading";
+    private static final String DOWNLOADING_FILE = "downloadingFile";
 
     public PrefManager(Context context) {
         this.context = context;
@@ -71,5 +73,23 @@ public class PrefManager {
 
     public String getPlayingTitle() {
         return pref.getString(TITLE_PLAYING, "title");
+    }
+
+    public void setDownloading(boolean downloading) {
+        editor.putBoolean(DOWNLOADING, downloading);
+        editor.apply();
+    }
+
+    public boolean isDownloading() {
+        return pref.getBoolean(DOWNLOADING, false);
+    }
+
+    public void setDownloadingFile(String file) {
+        editor.putString(DOWNLOADING_FILE, file);
+        editor.apply();
+    }
+
+    public String getDownloadingFile() {
+        return pref.getString(DOWNLOADING_FILE, "file");
     }
 }

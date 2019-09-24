@@ -1,5 +1,6 @@
 package br.com.eaglehorn.thundercast.Service;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,9 +12,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.ResultReceiver;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,38 +27,46 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import br.com.eaglehorn.thundercast.Preference.PrefManager;
 import br.com.eaglehorn.thundercast.R;
 
-public class DownloadService extends Service {
+public class TestService extends IntentService {
 
-    private static final String TAG = "DownloadService";
+    private static final String TAG = "TestService";
 
     public static final String ACTION_START_DOWNLOAD = "br.com.eaglehorn.thundercast.action.STARTDOWNLOAD";
     public static final String ACTION_STOP_DOWNLOAD = "br.com.eaglehorn.thundercast.action.STOPDOWNLOAD";
 
     public static final int UPDATE_PROGRESS = 1337;
 
-    ResultReceiver receiver;
+    ResultReceiver receiver, extra_receiver, dowrec;
     NotificationCompat.Builder notificationBuilder;
     Notification notification;
 
     private final String NOTIFICATION_CHANNEL_ID = "br.com.eaglehorn.thundercast";
     private final String channelName = "My Background Service";
 
-//    BroadcastReceiver nofiticationReceiver;
     NotificationManager manager;
     NotificationChannel chan;
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    PrefManager prefManager;
+
+    public TestService() {
+//        super(name);
+        super("myService");
+        Log.d(TAG, "TestService: ");
     }
 
+    @Override
+    public void setIntentRedelivery(boolean enabled) {
+        super.setIntentRedelivery(enabled);
+        Log.d(TAG, "setIntentRedelivery: ");
+    }
 
     @Override
     public void onCreate() {
+        super.onCreate();
         Log.d(TAG, "onCreate: ");
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             chan = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
@@ -66,20 +79,51 @@ public class DownloadService extends Service {
         assert manager != null;
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-        super.onCreate();
+
+        prefManager = new PrefManager(getApplicationContext());
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onStart(@Nullable Intent intent, int startId) {
+        super.onStart(intent, startId);
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand: ");
+        return super.onStartCommand(intent, flags, startId);
+
+//        return Service.START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+//        prefManager.setDownloading(false);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind: ");
+        return super.onBind(intent);
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        Log.d(TAG, "onHandleIntent: ");
 
         String action = intent.getAction();
-        Log.d(TAG, "onStartCommand: " + action);
-
         receiver = intent.getParcelableExtra("receiver");
+        extra_receiver = intent.getParcelableExtra("extra_receiver");
+        dowrec = intent.getParcelableExtra("receiver2");
 
         if (action.equals(ACTION_START_DOWNLOAD)) {
             String url = intent.getStringExtra("url");
             String filename = intent.getStringExtra("filename");
+
             Log.d(TAG, "onStartCommand: " + url);
 
             startDownload(url, filename);
@@ -90,16 +134,16 @@ public class DownloadService extends Service {
         }
 
         createNotification();
-
-        return Service.START_NOT_STICKY;
     }
 
     private void startDownload(String URL, String filename) {
 
         new Thread(() -> {
             try {
+                prefManager.setDownloading(true);
+                prefManager.setDownloadingFile(URL);
                 // Your implementation
-                URL url = null;
+                java.net.URL url = null;
                 url = new URL(URL);
 
                 URLConnection connection = url.openConnection();
@@ -129,6 +173,9 @@ public class DownloadService extends Service {
                     updateNotification(progress);
                     resultData.putInt("progress" , progress);
                     receiver.send(UPDATE_PROGRESS, resultData);
+                    extra_receiver.send(UPDATE_PROGRESS, resultData);
+                    if (dowrec != null)
+                    dowrec.send(UPDATE_PROGRESS, resultData);
                     output.write(data, 0, count);
                 }
 
@@ -138,6 +185,7 @@ public class DownloadService extends Service {
                 input.close();
 
             } catch (Exception e) {
+                prefManager.setDownloading(false);
                 e.printStackTrace();
             }
         }).start();
@@ -146,8 +194,8 @@ public class DownloadService extends Service {
 
     private void updateNotification(int progress) {
 
-        Log.d(TAG, "updateNotification: " + progress);
-//        notificationBuilder.setProgress(100, progress,false);
+//        Log.d(TAG, "updateNotification: " + progress);
+
         notification =
                 notificationBuilder
                         .setSmallIcon(R.drawable.flash)
@@ -174,21 +222,6 @@ public class DownloadService extends Service {
 
     private void createNotification() {
 
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//
-//        Intent startDownloadIntent = new Intent(this, NotificationReceiver.class);
-//        startDownloadIntent.setAction(ACTION_START_DOWNLOAD);
-//
-//        Intent stopDownloadIntent = new Intent(this, NotificationReceiver.class);
-//        stopDownloadIntent.setAction(ACTION_STOP_DOWNLOAD);
-//
-//        PendingIntent pendingIntent = PendingIntent.getActivity(
-//                this,
-//                0,
-//                notificationIntent,
-//                0);
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             chan.setLightColor(Color.BLUE);
@@ -201,12 +234,12 @@ public class DownloadService extends Service {
         notification = notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.drawable.flash)
                 .setContentTitle("Download")
-//                .setContentIntent(pendingIntent)
                 .setProgress(100, 0, false)
                 .build();
 
         startForeground(1337, notification);
 
     }
+
 
 }
