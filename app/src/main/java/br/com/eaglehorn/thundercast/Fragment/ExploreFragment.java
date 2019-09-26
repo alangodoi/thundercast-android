@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -204,7 +205,7 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
                     Log.d(TAG, "onResponse: " + response.body().get(0).getArtwork());
 
                     Random rand = new Random();
-                    int value = rand.nextInt(12);
+                    int value = rand.nextInt(21);
 
                     RequestOptions options = new RequestOptions();
                     options
@@ -253,23 +254,31 @@ public class ExploreFragment extends Fragment implements TrendingLineHolder.OnTr
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
-                Log.d(TAG, "onResponse: " + response.body().get(0).getArtistName());
-                for (int i=0; i<5; i++) {
-                    trendinglist.add(new Podcast(
-                            response.body().get(i).getId(),
-                            response.body().get(i).getArtistName(),
-                            response.body().get(i).getTitle(),
-                            response.body().get(i).getDescription(),
-                            response.body().get(i).getLink(),
-                            response.body().get(i).getFeed(),
-                            response.body().get(i).getArtwork(),
-                            response.body().get(i).getCopyright(),
-                            response.body().get(i).getCreatedAt(),
-                            response.body().get(i).getUpdatedAt()
-                    ));
+
+                if (response.isSuccessful()) {
+                    for (int i=0; i<response.body().size(); i++) {
+
+                        Log.d(TAG, "onResponse: " + response.body().get(i).getArtistName());
+
+                        trendinglist.add(new Podcast(
+                                response.body().get(i).getId(),
+                                response.body().get(i).getArtistName(),
+                                response.body().get(i).getTitle(),
+                                response.body().get(i).getDescription(),
+                                response.body().get(i).getLink(),
+                                response.body().get(i).getFeed(),
+                                response.body().get(i).getArtwork(),
+                                response.body().get(i).getCopyright(),
+                                response.body().get(i).getCreatedAt(),
+                                response.body().get(i).getUpdatedAt()
+                        ));
+                    }
+
+                    trendingAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getActivity(), "Algo deu errado!", Toast.LENGTH_SHORT).show();
                 }
 
-                trendingAdapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
                 clBottom.setVisibility(View.VISIBLE);
             }
